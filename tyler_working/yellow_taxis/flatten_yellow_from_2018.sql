@@ -1,34 +1,35 @@
 -- Setup
-USE WAREHOUSE tyler_big_wh;
-USE DATABASE bronze_layer;
-USE SCHEMA flattened;
+USE WAREHOUSE compute_wh;
+USE DATABASE adf_test;
+USE SCHEMA adf_flattening;
+
 
 -- create flat yellow taxi table in bronze layer
-CREATE OR REPLACE TABLE yellow_flat AS 
+CREATE OR REPLACE TABLE adf_yellow_flat AS 
 SELECT
-    taxi_col:DOLocationID::int as DOLocationID,
-    taxi_col:PULocationID::int as PULocationID,
-    taxi_col:RatecodeID::int as RatecodeID,
-    taxi_col:VendorID::int as VendorID,
-    taxi_col:extra::float as extra,
-    taxi_col:fare_amount::float as fare_amount,
-    taxi_col:improvement_surcharge::float as improvement_surcharge,
-    taxi_col:mta_tax::float as mta_tax,
-    taxi_col:passenger_count::int as passenger_count,
-    taxi_col:payment_type::int as payment_type, 
-    taxi_col:store_and_fwd_flag::string(10) as store_and_fwd_flag,
-    taxi_col:tip_amount::float as tip_amount,
-    taxi_col:tolls_amount::float as tolls_amount,
-    taxi_col:total_amount::float as total_amount,
-    taxi_col:tpep_dropoff_datetime::string(50) as tpep_dropoff_datetime, 
-    taxi_col:tpep_pickup_datetime::string(50) as tpep_pickup_datetime,
-    taxi_col:trip_distance::float as trip_distance,
-    taxi_col:congestion_surchage::float as congestion_surcharge,
-    taxi_col:airport_fee::float as airport_fee,
-FROM bronze_layer.json.yellow_from_2018_in
+    $1:DOLocationID::int as DOLocationID,
+    $1:PULocationID::int as PULocationID,
+    $1:RatecodeID::int as RatecodeID,
+    $1:VendorID::int as VendorID,
+    $1:extra::float as extra,
+    $1:fare_amount::float as fare_amount,
+    $1:improvement_surcharge::float as improvement_surcharge,
+    $1:mta_tax::float as mta_tax,
+    $1:passenger_count::int as passenger_count,
+    $1:payment_type::int as payment_type, 
+    $1:store_and_fwd_flag::string(10) as store_and_fwd_flag,
+    $1:tip_amount::float as tip_amount,
+    $1:tolls_amount::float as tolls_amount,
+    $1:total_amount::float as total_amount,
+    $1:tpep_dropoff_datetime::string(50) as tpep_dropoff_datetime, 
+    $1:tpep_pickup_datetime::string(50) as tpep_pickup_datetime,
+    $1:trip_distance::float as trip_distance,
+    $1:congestion_surchage::float as congestion_surcharge,
+    $1:airport_fee::float as airport_fee,
+FROM adf_layer.adf_landing.yellow_in
 ;
 
-USE WAREHOUSE tyler_wh;
-SELECT COUNT(*) FROM bronze_layer.flattened.yellow_flat;
---SHOW COLUMNS IN yellow_flat;
+
+SELECT COUNT(*) FROM adf_test.adf_flattening.adf_yellow_flat;
+--SHOW COLUMNS IN adf_yellow_flat;
 
