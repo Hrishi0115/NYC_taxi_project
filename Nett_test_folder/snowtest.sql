@@ -128,3 +128,12 @@ FROM yellow_flat
 GROUP BY extra
 ORDER BY COUNT(*) DESC
 LIMIT 10;
+
+
+SELECT
+    Payment_type,
+    COUNT(*)
+FROM green_flat
+GROUP BY Payment_type
+ORDER BY COUNT(*) DESC
+LIMIT 10;
