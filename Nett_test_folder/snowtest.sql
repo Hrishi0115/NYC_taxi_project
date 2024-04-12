@@ -98,6 +98,6 @@ LIMIT 1;
 SELECT
 lpep_pickup_datetime,
 to_timestamp(LPEP_PICKUP_DATETIME),
---COUNT(*) AS not_2018
+COUNT(*) AS not_2018
 FROM green_flat
-WHERE lpep_pickup_datetime IS NOT 
+WHERE lpep_pickup_datetime LIKE %2018% 
