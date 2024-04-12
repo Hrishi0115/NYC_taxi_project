@@ -98,8 +98,12 @@ FROM green_flat
 LIMIT 1;
 
 SELECT
-lpep_pickup_datetime,
-to_timestamp(LPEP_PICKUP_DATETIME),
+--lpep_pickup_datetime,
+YEAR(to_timestamp(LPEP_PICKUP_DATETIME)),
 COUNT(*)
 FROM green_flat
-WHERE lpep_pickup_datetime LIKE %2018% 
+--WHERE YEAR(to_timestamp(LPEP_PICKUP_DATETIME)) != 2018
+GROUP BY YEAR(to_timestamp(LPEP_PICKUP_DATETIME))
+ORDER BY COUNT (*) DESC;
+
+
