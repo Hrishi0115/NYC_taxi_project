@@ -84,3 +84,20 @@ FROM green_flat
 GROUP BY Trip_type
 ORDER BY COUNT(*) DESC;
 
+SELECT
+lpep_pickup_datetime,
+COUNT(*) AS null_count
+FROM green_flat
+WHERE lpep_pickup_datetime IS NULL;
+
+SELECT 
+lpep_pickup_datetime
+FROM green_flat
+LIMIT 1;
+
+SELECT
+lpep_pickup_datetime,
+to_timestamp(LPEP_PICKUP_DATETIME),
+--COUNT(*) AS not_2018
+FROM green_flat
+WHERE lpep_pickup_datetime IS NOT 
