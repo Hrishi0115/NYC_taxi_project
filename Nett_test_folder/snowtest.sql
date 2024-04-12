@@ -84,6 +84,8 @@ FROM green_flat
 GROUP BY Trip_type
 ORDER BY COUNT(*) DESC;
 
+--Checking lpep_pickup_datetime
+--
 SELECT
 lpep_pickup_datetime,
 COUNT(*) AS null_count
@@ -98,6 +100,6 @@ LIMIT 1;
 SELECT
 lpep_pickup_datetime,
 to_timestamp(LPEP_PICKUP_DATETIME),
-COUNT(*) AS not_2018
+COUNT(*)
 FROM green_flat
 WHERE lpep_pickup_datetime LIKE %2018% 
