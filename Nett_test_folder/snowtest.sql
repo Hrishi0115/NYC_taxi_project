@@ -110,7 +110,21 @@ FROM green_flat
 GROUP BY YEAR(to_timestamp(LPEP_PICKUP_DATETIME))
 ORDER BY COUNT (*) DESC;
 
+--lpep_dropoff_datetime,
+SELECT
+--lpep_pickup_datetime,
+YEAR(to_timestamp(LPEP_PICKUP_DATETIME)),
+COUNT(*)
+FROM green_flat
+--WHERE YEAR(to_timestamp(LPEP_PICKUP_DATETIME)) != 2018
+GROUP BY YEAR(to_timestamp(LPEP_PICKUP_DATETIME))
+ORDER BY COUNT (*) DESC;
 
 
-
-
+SELECT
+    extra,
+    COUNT(*)
+FROM yellow_flat
+GROUP BY extra
+ORDER BY COUNT(*) DESC
+LIMIT 10;
