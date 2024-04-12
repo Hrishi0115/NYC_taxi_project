@@ -28,6 +28,8 @@ SHOW COLUMNS IN TABLE green_flat;
 -- Could be an error of adding 3 individual vendor ID's being 2 + 2 + 1 = 5, otherwise just an error. 
 --Why would it be repeated 26 times though aside from other errors?
 
+-- Possible Action --> Could change any values which are not 1 or 2 into another VendorID: 3 which refers to NULL.
+
 SELECT
     vendorid,
     COUNT(*)
@@ -51,6 +53,7 @@ ORDER BY COUNT(*) DESC;
 --1c: Store_and_fwd_flag (data dict shows only Yand N in reference to storing trip data due to loss of connection to vendor)
 --notes:
 -- There are 100k rows with Store_and_fwd_flag:Null --> Data is not valuable and can be dropped.
+--New Action --> Avoid dropping rows and change Nulls to U.
 
 SELECT
 Store_and_fwd_flag, 
@@ -77,6 +80,7 @@ ORDER BY COUNT(*) DESC;
 --The Null trip types are of the lowest occurance.
 -- There are 35 times more trips taken by street-hail (1) than Dispatch (2). 
 
+--Action--> Put 3 as Unknown and avoid putting NULL. Change NULL to 3, and document it so that we convert this to unknown in the Gold layer.
 SELECT
 Trip_type, 
 COUNT(*)
@@ -105,5 +109,8 @@ FROM green_flat
 --WHERE YEAR(to_timestamp(LPEP_PICKUP_DATETIME)) != 2018
 GROUP BY YEAR(to_timestamp(LPEP_PICKUP_DATETIME))
 ORDER BY COUNT (*) DESC;
+
+
+
 
 
