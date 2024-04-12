@@ -1,4 +1,3 @@
-use role accountadmin;
 use warehouse nyc_test_data;
 
 use clarissa;
