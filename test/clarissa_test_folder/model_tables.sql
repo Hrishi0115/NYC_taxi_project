@@ -1,8 +1,7 @@
 -- create database for gold level
-use warehouse nyc_test_data;
-create database gold_level;
+use warehouse CLARISSA_XS;
+-- create database gold_level;
 use gold_level;
-
 
 create or replace table payment_type_dim
 ( 
@@ -55,7 +54,7 @@ TO_DATE(MY_DATE) as date
 ,YEAR(MY_DATE) as year
 ,WEEKOFYEAR(MY_DATE) as weekofyear
 ,DAYOFYEAR(MY_DATE) as dayofyear
-,HOUR(MY_DATE) as hour
+,QUARTER(MY_DATE) as quarter
 FROM my_cte
 ;
 
@@ -82,7 +81,6 @@ base_num VARCHAR(15) PRIMARY KEY
 );
 
 
-
 create or replace table trip_fact_table
 (
 taxi_trip_id INT PRIMARY KEY 
@@ -98,14 +96,14 @@ taxi_trip_id INT PRIMARY KEY
 ,rate_code_id INT
 ,payment_type_id INT
 ,taxi_type_id INT
-,fare_amount DECIMAL(10,2)
-,extra DECIMAL(10,2)
-,mta_tax DECIMAL(10,2)
-,improvement_surcharge DECIMAL(10,2)
-,tip_amount DECIMAL(10,2)
-,total_amount DECIMAL(10,2)
-,airport_fee DECIMAL(10,2)
-,congestion_surcharge DECIMAL(10,2)
+,fare_amount FLOAT
+,extra FLOAT
+,mta_tax FLOAT
+,improvement_surcharge FLOAT
+,tip_amount FLOAT
+,total_amount FLOAT
+,airport_fee FLOAT
+,congestion_surcharge FLOAT
 );
 
 
@@ -120,26 +118,26 @@ fhv_trip_id INT PRIMARY KEY
 ,DO_time_id INT
 ,PU_location_id INT
 ,DO_location_id INT
-,SR_flag BOOL
+,SR_flag BOOLEAN
 ,request_date_id INT
 ,request_time_id INT
 ,onscene_date_id INT
 ,onscene_time_id INT
 ,accessible_vehicle VARCHAR (1) 
-,trip_miles DECIMAL(10,2)
-,trip_time DECIMAL(10,2) --duration
-,base_passenger_fare DECIMAL(10,2)
-,tolls DECIMAL(10,2)
-,bcf DECIMAL(10,2)
-,sales_tax DECIMAL(10,2)
-,congestion_surcharge DECIMAL(10,2)
-,airport_fee DECIMAL(10,2)
-,tips DECIMAL(10,2)
-,driver_pay DECIMAL(10,2)
-,shared_request_flag VARCHAR(1)
-,access_a_ride_flag VARCHAR(1)
-,wav_request VARCHAR(1)
-,wav_match_flag VARCHAR(1)
+,trip_miles FLOAT
+,trip_time FLOAT
+,base_passenger_fare FLOAT
+,tolls FLOAT
+,bcf FLOAT
+,sales_tax FLOAT
+,congestion_surcharge DEFLOAT
+,airport_fee FLOAT
+,tips FLOAT
+,driver_pay FLOAT
+,shared_request_flag FLOAT
+,access_a_ride_flag FLOAT
+,wav_request FLOAT
+,wav_match_flag FLOAT
 );
 
 
@@ -194,7 +192,7 @@ credentials = (AZURE_SAS_TOKEN = 'sp=rl&st=2024-04-10T13:48:21Z&se=2024-04-19T21
 list @zone_stage;
 
 create or replace FILE FORMAT csv_zone
-TYPE = csv
+TYPE = csv;
 
 SELECT $1,$2,$3,$4,$5
 from @zone_stage
@@ -203,4 +201,33 @@ LIMIT 10;
 
 copy into zone_dim
 from @zone_stage
-file_format = csv_zone
+file_format = csv_zone;
+
+
+INSERT INTO high_volume_dim
+(
+hv_license_number
+,app_company_affiliation)
+VALUES
+('HV0002', 'Juno')
+,('HV0003', 'Uber')
+,('HV0004', 'Via')
+,('HV0005', 'Lyft');
+
+
+
+create or replace stage base_stage
+url = 'azure://triathlonnyc.blob.core.windows.net/output/base_number_table'
+credentials = (AZURE_SAS_TOKEN = 'sp=rl&st=2024-04-10T13:48:21Z&se=2024-04-19T21:48:21Z&spr=https&sv=2022-11-02&sr=c&sig=gnfFLDUs19AGWxqa10Hp%2BQctVrHQe6I6DC2s2qhWOns%3D')
+;
+list @base_stage;
+
+SELECT $1,$2,$3,$4,$5
+from @base_stage
+(file_format => csv_zone)
+LIMIT 10;
+
+copy into zone_dim
+from @zone_stage
+file_format = csv_zone;
+
