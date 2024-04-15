@@ -1,7 +1,7 @@
 -- Setup
-USE WAREHOUSE;
-USE DATABASE;
-USE SCHEMA;
+USE WAREHOUSE NETT_WH;
+USE DATABASE silver_layer;
+USE SCHEMA test;
  
 -- source table columns:
 --SHOW COLUMNS IN bronze_layer.flattened.green_flat;
@@ -32,7 +32,8 @@ CREATE OR REPLACE TABLE silver_layer.test.green
     lpep_dropoff_time TIME,
     trip_distance DECIMAL(10,2),
     TRIP_TYPE INT,
-    total_amount DECIMAL(10,2)
+    total_amount DECIMAL(10,2),
+    trip_duration_minutes DECIMAL(10,1)
 );
 
 INSERT INTO silver_layer.test.green 
@@ -56,57 +57,55 @@ INSERT INTO silver_layer.test.green
     lpep_pickup_time,
     trip_distance,
     TRIP_TYPE,
-    total_amount
+    total_amount,
+    trip_duration_minutes
 )
 
 WITH silver_cte AS (
 SELECT
         CASE
-        WHEN dolocationid < 1 or dolocationid > 265 THEN 264
-        ELSE dolocationid END AS
+        WHEN dolocationid BETWEEN 1 AND 265 THEN dolocationid
+        ELSE 264 END AS
     dolocationid,
         CASE
-        WHEN pulocationid NOT BETWEEN 1 AND 265 THEN 264
-        ELSE pulocationid END AS
+        WHEN pulocationid BETWEEN 1 AND 265 THEN pulocationid
+        ELSE 264 END AS
     pulocationid,
         CASE
-        WHEN ratecodeid NOT BETWEEN 1 AND 6 THEN 7 -- SET 7 as UKNOWN FOR RATECODE ID IN DIMENSION TABLE.
-        ELSE ratecodeid END AS
+        WHEN ratecodeid BETWEEN 1 AND 6 THEN ratecodeid -- SET 7 as UKNOWN FOR RATECODE ID IN DIMENSION TABLE.
+        ELSE 7 END AS
     ratecodeid,
         CASE
-        WHEN vendorid NOT BETWEEN 1 AND 2 THEN 3 -- SET 3 as UNKNOWN FOR RATECODE ID IN DIMENSION TABLE. 
-        ELSE vendorid END AS
+        WHEN vendorid BETWEEN 1 AND 2 THEN vendorid -- SET 3 as UNKNOWN FOR RATECODE ID IN DIMENSION TABLE. 
+        ELSE 3 END AS
     vendorid,
         CASE 
-        WHEN extra NOT IN (0, 0.5, 1, 4.5, 2.75, -0.5, -1, -2.75, -4.75) THEN NULL
-        WHEN extra < 0 THEN extra*-1
-        ELSE extra END AS
+        WHEN extra IN (0, 0.5, 1, 4.5, 2.75, -0.5, -1, -2.75, -4.75) THEN ABS(extra)
+        ELSE NULL END AS
     extra,
         CASE
-        WHEN fare_amount > 500 or fare_amount < -500 THEN NULL
-        WHEN fare_amount BETWEEN -500 AND 0 THEN fare_amount*-1
+        WHEN fare_amount BETWEEN -500 AND 500 THEN ABS(fare_amount)
         ELSE fare_amount END AS
     fare_amount,
         CASE 
-        WHEN improvement_surcharge NOT IN (-0.3, 0, 0.3) THEN NULL
-        WHEN improvement_surcharge = -0.3 THEN improvement_surcharge*-1
-        ELSE improvement_surcharge END AS
+        WHEN improvement_surcharge IN (-0.3, 0, 0.3) THEN ABS(improvement_surcharge)
+        ELSE NULL END AS
     improvement_surcharge,
         CASE
-        WHEN MTA_TAX NOT IN (-0.5, 0, 0.5) THEN NULL
-        WHEN MTA_TAX = -0.5 THEN MTA_TAX*-1
-        ELSE MTA_TAX END AS
+        WHEN MTA_TAX IN (-0.5, 0, 0.5) THEN ABS(MTA_TAX)
+        ELSE NULL END AS
     MTA_TAX,
         CASE
-        WHEN passenger_count NOT BETWEEN 0 AND 6 THEN NULL
-        ELSE passenger_count END AS 
+        WHEN passenger_count BETWEEN 0 AND 6 THEN passenger_count
+        ELSE NULL END AS 
     passenger_count,
         CASE 
-        WHEN payment_type NOT BETWEEN 1 AND 6 THEN 5
-        ELSE payment_type END AS
+        WHEN payment_type BETWEEN 1 AND 6 THEN payment_type
+        ELSE 5 END AS
     payment_type,
         CASE
-        WHEN UPPER(Store_and_fwd_flag) NOT IN ('Y', 'N') THEN 'U'
+        WHEN Store_and_fwd_flag NOT IN ('Y', 'y', 'N', 'n') THEN 'U'
+        WHEN Store_and_fwd_flag IS NULL THEN 'U'
         ELSE UPPER(Store_and_fwd_flag) END AS
     Store_and_fwd_flag,
     tip_amount,
@@ -125,23 +124,24 @@ SELECT
     lpep_pickup_date,
     TO_TIME(lpep_pickup_datetime) AS lpep_pickup_time,
         CASE
-        WHEN ABS(trip_distance) > 200 THEN NULL
-        ELSE ABS(trip_distance) END AS
+        WHEN ABS(trip_distance) <= 200 THEN ABS(trip_distance)
+        ELSE NULL END AS
     trip_distance,
         CASE 
-        WHEN TRIP_TYPE NOT IN (1, 2) THEN 3
-        ELSE TRIP_TYPE END AS
+        WHEN TRIP_TYPE IN (1, 2) THEN TRIP_TYPE
+        ELSE 3 END AS
     TRIP_TYPE
     FROM bronze_layer.flattened.green_flat
 )
 
 SELECT
 *, 
-(fare_amount + extra + mta_tax + improvement_surcharge + tip_amount + tolls_amount) AS total_amount
+(fare_amount + extra + mta_tax + improvement_surcharge + tip_amount + tolls_amount) AS total_amount,
+ROUND(TIMEDIFF(second, lpep_pickup_time, lpep_dropoff_time) / 60, 1) AS trip_duration_minutes
 FROM silver_cte;
 
 
-SELECT* FROM silver_layer.test.green LIMIT 10;
+--SELECT DISTINCT trip_type FROM silver_layer.test.green LIMIT 10;
 
 
 
