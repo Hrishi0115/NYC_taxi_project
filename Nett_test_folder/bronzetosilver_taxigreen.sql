@@ -136,12 +136,22 @@ SELECT
 
 SELECT
 *, 
-(fare_amount + extra + mta_tax + improvement_surcharge + tip_amount + tolls_amount) AS total_amount,
-ROUND(TIMEDIFF(second, lpep_pickup_time, lpep_dropoff_time) / 60, 1) AS trip_duration_minutes
+COALESCE(fare_amount,0) + COALESCE(extra,0) + COALESCE(mta_tax,0) + COALESCE(improvement_surcharge,0) + COALESCE(tip_amount,0) + COALESCE(tolls_amount,0) AS
+total_amount,
+    CASE
+    WHEN TIMEDIFF(second, lpep_pickup_time, lpep_dropoff_time) / 60 < 0 AND ROUND((TIMEDIFF(second, lpep_pickup_time, lpep_dropoff_time) / 60) + 1440 , 1) > 300
+    THEN NULL
+    WHEN TIMEDIFF(second, lpep_pickup_time, lpep_dropoff_time) / 60 < 0
+    THEN ROUND((TIMEDIFF(second, lpep_pickup_time, lpep_dropoff_time) / 60) + 1440 , 1)
+    WHEN TIMEDIFF(second, lpep_pickup_time, lpep_dropoff_time) / 60 > 300
+    THEN NULL
+    ELSE ROUND((TIMEDIFF(second, lpep_pickup_time, lpep_dropoff_time) / 60), 1) END AS
+    trip_duration_minutes
 FROM silver_cte;
 
-
---SELECT DISTINCT trip_type FROM silver_layer.test.green LIMIT 10;
+-- SELECT * FROM silver_layer.test.green WHERE trip_duration_minutes > 1000;
+-- SELECT MAX(trip_duration_minutes) FROM silver_layer.test.green;
+-- --SELECT DISTINCT trip_type FROM silver_layer.test.green LIMIT 10;
 
 
 
