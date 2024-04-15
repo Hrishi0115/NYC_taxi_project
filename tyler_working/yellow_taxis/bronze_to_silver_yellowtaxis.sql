@@ -7,8 +7,9 @@ USE SCHEMA test;
 SHOW COLUMNS IN bronze_layer.flattened.yellow_flat;
 
 
+
 -- testing create silver table
-WITH test_silver_cte AS (
+WITH silver_cte AS (
 SELECT
         CASE 
         WHEN dolocationid < 1 OR dolocationid > 265 THEN 264 -- 264 means unknown in zone mapping
@@ -56,11 +57,44 @@ SELECT
         WHEN payment_type < 1 OR payment_type > 6 THEN 5
         WHEN payment_type IS NULL THEN 5
         ELSE payment_type END AS
-    payment_type
+    payment_type,
+        CASE
+        WHEN UPPER(store_and_fwd_flag) NOT IN ('Y', 'N') THEN 'U' -- put Unknown in dimension table
+        ELSE UPPER(store_and_fwd_flag) END AS
+    store_and_fwd_flag,
+    tip_amount, -- ask richard about tips (theoretically could be any amount)
+        CASE
+        WHEN ABS(tolls_amount) > 120 THEN NULL
+        ELSE ABS(tolls_amount) END AS
+    tolls_amount,
+        CASE 
+        WHEN YEAR(TO_DATE(tpep_dropoff_datetime)) > 2017 THEN TO_DATE(tpep_dropoff_datetime)
+        ELSE NULL END AS 
+    tpep_dropoff_date,
+    TO_TIME(tpep_dropoff_datetime) AS tpep_dropoff_time,
+        CASE 
+        WHEN YEAR(TO_DATE(tpep_pickup_datetime)) > 2017 THEN TO_DATE(tpep_pickup_datetime)
+        ELSE NULL END AS 
+    tpep_pickup_date,
+    TO_TIME(tpep_pickup_datetime) AS tpep_pickup_time,
+        CASE 
+        WHEN ABS(trip_distance) > 200 THEN NULL
+        ELSE ABS(trip_distance) END AS 
+    trip_distance,
+        CASE 
+        WHEN congestion_surcharge > 120 THEN NULL
+        ELSE congestion_surcharge END AS
+    congestion_surcharge,
+        CASE 
+        WHEN ABS(airport_fee) NOT IN (0, 1.25) THEN NULL
+        ELSE ABS(airport_fee) END AS 
+    airport_fee
 FROM bronze_layer.flattened.yellow_flat
 )  
-SELECT  
-    DISTINCT payment_type
-FROM test_silver_cte;
+SELECT
+    *,
+    fare_amount + extra + mta_tax + improvement_surcharge + tip_amount + tolls_amount AS total_amount
+FROM silver_cte
+LIMIT 100;
 
 

@@ -195,30 +195,32 @@ LIMIT 10;
 --    ask richard about 509 tips over $150 (tempted to drop)
 --        also $150 is arbitrary, i have just chosen as it seems sensible
 SELECT 
-    COUNT(*)
+    tip_amount
 FROM yellow_flat
-WHERE tip_amount > 150
-ORDER BY tip_amount ASC;
+ORDER BY tip_amount DESC LIMIT 100;
 
 
 ---- 2f: tolls_amount (data dict says this is a total (sum of taxes and extra?))
 -- notes:
---    most are 0
---    only 4000 values above 30
---    817 values below 0
---    almost all values below zero are > -50
+--     above 100 all values are single digits
 -- actions:
---    convert all negative values above -50 to positive
---    drop all values above 30 and below -50? 
---        (again arbitrary numbers but only impacts a small relative number of rows)
+--     convert anything > 120 or < -120 to null
+--     all values -120 < v < 0 will have the sign flipped
 
+WITH my_cte AS (
 SELECT -- see most frequent values
-    tolls_amount,
-    COUNT(*)
+    ROUND(tolls_amount, 0) AS tolls
 FROM yellow_flat
-GROUP BY tolls_amount
-ORDER BY COUNT(*) DESC
-LIMIT 10;
+)
+SELECT
+    tolls,
+    COUNT(*) AS toll_count
+FROM my_cte
+GROUP BY tolls
+ORDER BY tolls DESC;
+
+
+
 
 SELECT -- see how many values are above or below a threshold (0 and 30?)
     COUNT(*)
@@ -288,3 +290,19 @@ SELECT -- see most frequent values
 FROM yellow_flat
 GROUP BY dolocationid
 ORDER BY dolocationid DESC;
+
+
+---- trip distances
+
+-- cut off distances above 200 miles
+WITH cte1 AS ( 
+SELECT 
+    ROUND(trip_distance, -1) AS distance
+FROM yellow_flat
+)
+SELECT
+    distance,
+    COUNT(distance)
+FROM cte1
+GROUP BY distance
+ORDER BY distance DESC;
