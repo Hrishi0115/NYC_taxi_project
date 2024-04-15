@@ -63,19 +63,19 @@ INSERT INTO silver_layer.test.yellow
 WITH silver_cte AS (
 SELECT
         CASE 
-        WHEN dolocationid NOT BETWEEN 1 AND 265 THEN 264 -- 264 means unknown in zone mapping
-        ELSE dolocationid END AS 
+        WHEN dolocationid >= 1 AND dolocationid <= 265 THEN dolocationid
+        ELSE 264 END AS -- 264 means unknown in zone mapping
     dolocationid,
         CASE 
-        WHEN pulocationid NOT BETWEEN 1 AND 265 THEN 264 -- 264 means unknown in zone mapping
-        ELSE pulocationid END AS 
+        WHEN pulocationid >= 1 AND pulocationid <= 265 THEN pulocationid
+        ELSE 264 END AS -- 264 means unknown in zone mapping
     pulocationid,
         CASE 
-        WHEN ratecodeid NOT BETWEEN 1 AND 6 THEN 7 -- SET 7 as UNKNOWN FOR RATECODE ID IN DIMENSION TABLE
-        ELSE ratecodeid END AS
+        WHEN ratecodeid >= 1 AND ratecodeid <= 6 THEN ratecodeid 
+        ELSE 7 END AS -- SET 7 as UNKNOWN FOR RATECODE ID IN DIMENSION TABLE
     ratecodeid,
         CASE 
-        WHEN vendorid NOT BETWEEN 1 AND 2 THEN 3 -- SET 3 as UNKNOWN FOR RATECODE ID IN DIMENSION TABLE
+        WHEN vendorid NOT IN (1,2) THEN 3 -- SET 3 as UNKNOWN FOR RATECODE ID IN DIMENSION TABLE
         ELSE vendorid END AS 
     vendorid,
         CASE 
@@ -99,15 +99,16 @@ SELECT
         ELSE mta_tax END AS 
     mta_tax,
         CASE
-        WHEN passenger_count NOT BETWEEN 0 AND 6 THEN NULL
-        ELSE passenger_count END AS
+        WHEN passenger_count >= 0 AND passenger_count <= 6 THEN passenger_count
+        ELSE NULL END AS
     passenger_count,
         CASE
-        WHEN payment_type NOT BETWEEN 1 AND 6 THEN 5
-        ELSE payment_type END AS
+        WHEN payment_type >= 1 AND payment_type <= 6 THEN payment_type
+        ELSE 5 END AS --payment type 5 is unknown
     payment_type,
         CASE
-        WHEN UPPER(store_and_fwd_flag) NOT IN ('Y', 'N') THEN 'U' -- put Unknown in dimension table
+        WHEN store_and_fwd_flag NOT IN ('Y', 'y', 'N', 'n') THEN 'U' -- put Unknown in dimension table
+        WHEN store_and_fwd_flag IS NULL THEN 'U' -- have to be explicit as we use UPPER below
         ELSE UPPER(store_and_fwd_flag) END AS
     store_and_fwd_flag,
     tip_amount, -- ask richard about tips (theoretically could be any amount)
@@ -143,5 +144,4 @@ SELECT
     *,
     fare_amount + extra + mta_tax + improvement_surcharge + tip_amount + tolls_amount AS total_amount
 FROM silver_cte;
-
 
