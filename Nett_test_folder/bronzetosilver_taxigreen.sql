@@ -66,17 +66,15 @@ SELECT
         ELSE dolocationid END AS
     dolocationid,
         CASE
-        WHEN pulocationid < 1 OR pulocationid > 265 THEN 264
+        WHEN pulocationid NOT BETWEEN 1 AND 265 THEN 264
         ELSE pulocationid END AS
     pulocationid,
         CASE
-        WHEN ratecodeid < 1 OR ratecodeid > 6 THEN 7 -- SET 7 as UKNOWN FOR RATECODE ID IN DIMENSION TABLE.
-        WHEN ratecodeid IS NULL THEN 7
+        WHEN ratecodeid NOT BETWEEN 1 AND 6 THEN 7 -- SET 7 as UKNOWN FOR RATECODE ID IN DIMENSION TABLE.
         ELSE ratecodeid END AS
     ratecodeid,
         CASE
-        WHEN vendorid < 1 OR vendorid > 2 THEN 3 -- SET 3 as UNKNOWN FOR RATECODE ID IN DIMENSION TABLE. 
-        WHEN vendorid IS NULL Then 3
+        WHEN vendorid NOT BETWEEN 1 AND 2 THEN 3 -- SET 3 as UNKNOWN FOR RATECODE ID IN DIMENSION TABLE. 
         ELSE vendorid END AS
     vendorid,
         CASE 
@@ -100,12 +98,11 @@ SELECT
         ELSE MTA_TAX END AS
     MTA_TAX,
         CASE
-        WHEN passenger_count < 0 OR passenger_count > 6 THEN NULL
+        WHEN passenger_count NOT BETWEEN 0 AND 6 THEN NULL
         ELSE passenger_count END AS 
     passenger_count,
         CASE 
-        WHEN payment_type < 1 OR payment_type > 6 THEN 5
-        WHEN payment_type IS NULL THEN 5
+        WHEN payment_type NOT BETWEEN 1 AND 6 THEN 5
         ELSE payment_type END AS
     payment_type,
         CASE
