@@ -7,6 +7,9 @@ USE DATABASE bronze_layer;
 
 -- investigate
 
+-- how many rows in total --> 260,874,753
+SELECT count(*) FROM bronze_layer.flattened.fhv_flat;
+
 SELECT * FROM bronze_layer.flattened.fhv_flat LIMIT 5;
 
 -- dipatching_base_num
@@ -66,16 +69,61 @@ ORDER BY sr_flag
 -- 28 mil rows with value 1 (shared rides)
 -- 30 mil rows with values in range 2 - 53
 -- ACTION: 
--- a) change all non-1 values to null
--- b) change all in range 2 - 6 to 1 (shared rides), these are most of the rogue data points
---    then change the rest (7 - 53 to null, non-shared rides)
+-- add value 2 for unknown, change null to 0 
 
--- dropoff_datetime and pickip_datetime
+
+-- dropoff_datetime and pickup_datetime
 -- to_date() gives date format, ignores time
 SELECT to_date(dropoff_datetime)
-FROM flattened.fhv_flat
+FROM bronze_layer.flattened.fhv_flat
 LIMIT 5
 ;
+
+-- check years
+SELECT year(to_timestamp(dropoff_datetime)), count(*)
+FROM bronze_layer.flattened.fhv_flat
+GROUP BY year(to_timestamp(dropoff_datetime))
+;
+
+-- should be in year 2018, but there are entries from 1971 - 
+WITH ctedate AS (
+    SELECT to_date(dropoff_datetime) AS dropoff_date, count(*)
+    FROM flattened.fhv_flat
+    GROUP BY to_date(dropoff_datetime)
+)
+SELECT YEAR(dropoff_date)
+FROM ctedate
+GROUP BY YEAR(dropoff_date)
+ORDER BY YEAR(dropoff_date)
+;
+
+-- how many non 2018 rows?
+WITH ctedate AS (
+    SELECT to_date(dropoff_datetime) AS dropoff_date, pickup_datetime
+    FROM flattened.fhv_flat
+)
+SELECT YEAR(dropoff_date), count(*)
+FROM ctedate
+ORDER BY YEAR(dropoff_date)
+;
+
+
+-- figure out how to change year component to 2018
+
+SELECT 2018 AS target_year;
+
+WITH ctedate AS (
+    SELECT to_date(dropoff_datetime) AS dropoff_date, count(*)
+    FROM flattened.fhv_flat
+    GROUP BY to_date(dropoff_datetime)
+)
+
+SELECT DATEADD(year, target_year - YEAR(dropoff_date), dropoff_date) AS updated_date
+FROM ctedate;
+
+
+
+
 -- to_time() gives time format
 SELECT to_time(dropoff_datetime)
 FROM flattened.fhv_flat
@@ -86,6 +134,16 @@ SELECT to_timestamp(dropoff_datetime)
 FROM flattened.fhv_flat
 LIMIT 5
 ;
+
+-- check non 2018 years
+SELECT
+--lpep_pickup_datetime,
+YEAR(to_timestamp(LPEP_PICKUP_DATETIME)),
+COUNT(*)
+FROM flattened.fhv_flat
+--WHERE YEAR(to_timestamp(LPEP_PICKUP_DATETIME)) != 2018
+GROUP BY YEAR(to_timestamp(LPEP_PICKUP_DATETIME))
+ORDER BY COUNT (*) DESC;
 
 -- splitting timestamp() to date and time
 WITH cte AS
