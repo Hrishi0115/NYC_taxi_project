@@ -109,7 +109,7 @@ SELECT
         WHEN store_and_fwd_flag IS NULL THEN 'U' -- have to be explicit as we use UPPER below
         ELSE UPPER(store_and_fwd_flag) END AS
     store_and_fwd_flag,
-    tip_amount, -- ask richard about tips (theoretically could be any amount)
+    ABS(tip_amount), -- ask richard about tips (theoretically could be any amount)
         CASE
         WHEN ABS(tolls_amount) > 120 THEN NULL
         ELSE ABS(tolls_amount) END AS
@@ -159,3 +159,5 @@ SELECT *
 FROM silver_layer.test.yellow 
 WHERE trip_distance IS NOT NULL
 ORDER BY trip_distance DESC LIMIT 10;
+
+SELECT * FROM silver_layer.test.yellow WHERE fare_amount IS NOT NULL ORDER BY fare_amount DESC LIMIT 10;
