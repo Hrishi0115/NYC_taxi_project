@@ -4,29 +4,78 @@ USE DATABASE silver_layer;
 USE SCHEMA test;
 
 -- source table columns:
-SHOW COLUMNS IN bronze_layer.flattened.yellow_flat;
+--SHOW COLUMNS IN bronze_layer.flattened.yellow_flat;
 
+DROP TABLE IF EXISTS silver_layer.test.yellow;
 
+-- writing silver ctas all together
+CREATE OR REPLACE TABLE silver_layer.test.yellow 
+(
+    id INT AUTOINCREMENT PRIMARY KEY,
+    dolocationid INT,
+    pulocationid INT,
+    ratecodeid INT,
+    vendorid INT,
+    extra DECIMAL(10,2), 
+    fare_amount DECIMAL(10,2),
+    improvement_surchage DECIMAL(10,2),
+    mta_tax DECIMAL(10,2),
+    passenger_count INT,
+    payment_type INT,
+    store_and_fwd_flag STRING(1),
+    tip_amount DECIMAL(10,2),
+    tolls_amount DECIMAL(10,2),
+    tpep_dropoff_date DATE,
+    tpep_dropoff_time TIME,
+    tpep_pickup_date DATE,
+    tpep_pickup_time TIME,
+    trip_distance DECIMAL(10,2),
+    congestion_surcharge DECIMAL(10,2),
+    airport_fee DECIMAL(10,2),
+    total_amount DECIMAL(10,2)
+);
 
--- testing create silver table
+INSERT INTO silver_layer.test.yellow 
+(
+    dolocationid,
+    pulocationid,
+    ratecodeid,
+    vendorid,
+    extra, 
+    fare_amount,
+    improvement_surchage,
+    mta_tax,
+    passenger_count,
+    payment_type,
+    store_and_fwd_flag,
+    tip_amount,
+    tolls_amount,
+    tpep_dropoff_date,
+    tpep_dropoff_time,
+    tpep_pickup_date,
+    tpep_pickup_time,
+    trip_distance,
+    congestion_surcharge,
+    airport_fee,
+    total_amount
+)
+-- testing cleaning query for insert silver table
 WITH silver_cte AS (
 SELECT
         CASE 
-        WHEN dolocationid < 1 OR dolocationid > 265 THEN 264 -- 264 means unknown in zone mapping
+        WHEN dolocationid NOT BETWEEN 1 AND 265 THEN 264 -- 264 means unknown in zone mapping
         ELSE dolocationid END AS 
     dolocationid,
         CASE 
-        WHEN pulocationid < 1 OR pulocationid > 265 THEN 264 -- 264 means unknown in zone mapping
+        WHEN pulocationid NOT BETWEEN 1 AND 265 THEN 264 -- 264 means unknown in zone mapping
         ELSE pulocationid END AS 
     pulocationid,
         CASE 
-        WHEN ratecodeid < 1 OR ratecodeid > 6 THEN 7 -- SET 7 as UNKNOWN FOR RATECODE ID IN DIMENSION TABLE
-        WHEN ratecodeid IS NULL THEN 7
+        WHEN ratecodeid NOT BETWEEN 1 AND 6 THEN 7 -- SET 7 as UNKNOWN FOR RATECODE ID IN DIMENSION TABLE
         ELSE ratecodeid END AS
     ratecodeid,
         CASE 
-        WHEN vendorid < 1 OR vendorid > 2 THEN 3 -- SET 3 as UNKNOWN FOR RATECODE ID IN DIMENSION TABLE
-        WHEN vendorid IS NULL THEN 3
+        WHEN vendorid NOT BETWEEN 1 AND 2 THEN 3 -- SET 3 as UNKNOWN FOR RATECODE ID IN DIMENSION TABLE
         ELSE vendorid END AS 
     vendorid,
         CASE 
@@ -50,12 +99,11 @@ SELECT
         ELSE mta_tax END AS 
     mta_tax,
         CASE
-        WHEN passenger_count < 0 OR passenger_count > 6 THEN NULL
+        WHEN passenger_count NOT BETWEEN 0 AND 6 THEN NULL
         ELSE passenger_count END AS
     passenger_count,
         CASE
-        WHEN payment_type < 1 OR payment_type > 6 THEN 5
-        WHEN payment_type IS NULL THEN 5
+        WHEN payment_type NOT BETWEEN 1 AND 6 THEN 5
         ELSE payment_type END AS
     payment_type,
         CASE
@@ -68,12 +116,12 @@ SELECT
         ELSE ABS(tolls_amount) END AS
     tolls_amount,
         CASE 
-        WHEN YEAR(TO_DATE(tpep_dropoff_datetime)) > 2017 THEN TO_DATE(tpep_dropoff_datetime)
+        WHEN YEAR(TO_DATE(tpep_dropoff_datetime)) BETWEEN 2018 AND 2024 THEN TO_DATE(tpep_dropoff_datetime)
         ELSE NULL END AS 
     tpep_dropoff_date,
     TO_TIME(tpep_dropoff_datetime) AS tpep_dropoff_time,
         CASE 
-        WHEN YEAR(TO_DATE(tpep_pickup_datetime)) > 2017 THEN TO_DATE(tpep_pickup_datetime)
+        WHEN YEAR(TO_DATE(tpep_pickup_datetime)) BETWEEN 2018 AND 2024 THEN TO_DATE(tpep_pickup_datetime)
         ELSE NULL END AS 
     tpep_pickup_date,
     TO_TIME(tpep_pickup_datetime) AS tpep_pickup_time,
@@ -94,7 +142,6 @@ FROM bronze_layer.flattened.yellow_flat
 SELECT
     *,
     fare_amount + extra + mta_tax + improvement_surcharge + tip_amount + tolls_amount AS total_amount
-FROM silver_cte
-LIMIT 100;
+FROM silver_cte;
 
 
