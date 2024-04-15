@@ -118,12 +118,12 @@ SELECT
         ELSE ABS(tolls_amount) END AS
     tolls_amount,
         CASE
-        WHEN YEAR(TO_DATE(lpep_dropoff_datetime)) > 2017 THEN TO_DATE(lpep_dropoff_datetime)
+        WHEN YEAR(TO_DATE(lpep_dropoff_datetime)) BETWEEN 2018 AND 2024 THEN TO_DATE(lpep_dropoff_datetime)
         ELSE NULL END AS
     lpep_dropoff_date,
     TO_TIME(lpep_dropoff_datetime) AS lpep_dropoff_time,
         CASE
-        WHEN YEAR(TO_DATE(lpep_pickup_datetime)) > 2017 THEN TO_DATE(lpep_pickup_datetime)
+        WHEN YEAR(TO_DATE(lpep_pickup_datetime)) BETWEEN 2018 AND 2024 THEN TO_DATE(lpep_pickup_datetime)
         ELSE NULL END AS
     lpep_pickup_date,
     TO_TIME(lpep_pickup_datetime) AS lpep_pickup_time,
@@ -144,7 +144,7 @@ SELECT
 FROM silver_cte;
 
 
-
+SELECT* FROM silver_layer.test.green LIMIT 10;
 
 
 
