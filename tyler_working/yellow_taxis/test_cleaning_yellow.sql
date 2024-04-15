@@ -19,6 +19,9 @@ SHOW COLUMNS IN TABLE yellow_flat;
 -- notes: 
 --    output shows 1, 2, 4, and 5
 --    where is vendor id 3?
+-- actions:
+--    drop non 1 and 2s?
+--    OR (cecily idea) change all non 1 and 2s to 3 (create 3 = unknown in dimension table)
 SELECT 
     vendorid,
     COUNT(*)
@@ -32,7 +35,7 @@ ORDER BY COUNT(*) DESC;
 --    values found null, 2, 3, 4, 5, 6, 99
 --    5089 instances of 99 (rogue value)
 -- actions:
---    inspect the instances of 99 (replace or put to null?)
+--    change all non 1-6 to 7, 7 references unknown in rate code dimension table
 SELECT 
     RATECODEID,
     COUNT(*)
@@ -46,6 +49,7 @@ ORDER BY COUNT(*) DESC;
 --    only 'y' 'N' and null found (no rogue values)
 -- actions:
 --    change 'y' to uppercase?
+--    change nulls to 'U' and in storeflag dimension add U (PK) = unknown 
 SELECT 
     STORE_AND_FWD_FLAG,
     COUNT(*)
@@ -60,7 +64,7 @@ ORDER BY COUNT(*) DESC;
 --    only three instances of payment type 5
 --    could 0 actually be 5
 -- actions:
---    decide on 0 and 5 
+--    set anythin non 1-6 to be 5 (this column already contains unknown label = 5)
 SELECT 
     PAYMENT_TYPE,
     COUNT(*)
@@ -70,9 +74,13 @@ ORDER BY COUNT(*) DESC;
 
 
 
-
-
 ------ 2. inspect cash amounts and distances
+
+---- NUMERIC VALUES, two options:
+-- Create error table (good for filtering entire rows when moving to silver)
+-- set error numbers to null (quicker given time constraints)
+
+
 ---- taxi fares expected to be approx < $200
 ---- tolls expected to be approx < $30
 ---- extra should be limited to < $1
@@ -85,22 +93,44 @@ ORDER BY COUNT(*) DESC;
 --    Only 338 negative values below -100
 --    97000 negative values in range -100 < v < 0
 -- actions:
+--    EITHER DROP OR SET TO NULL
 --    drop all values above taxi threshold (e.g., $1000? $500? ask cecily and net)
 --    drop all negatives below -100
 --    convert all negatives above -100 to positive values 
 --        (assumption here is the sign is simply incorrect for the 97000 vals)
+
+
+-- set all fares above 500 or below -500 to null
+WITH my_cte AS (
+SELECT
+    CASE
+    WHEN fare_amount < 100 AND fare_amount > 0 THEN '<100'
+    WHEN fare_amount < 200 THEN '100 to 200'
+    WHEN fare_amount < 500 THEN '200 to 500'
+    WHEN fare_amount < 1000 THEN '500 to 1000'
+    ELSE '1000+' END AS price_groups
+FROM yellow_flat
+)
+SELECT 
+    price_groups,
+    COUNT(*)
+FROM my_cte
+GROUP BY price_groups
+ORDER BY COUNT(*) DESC;
+
+
 SELECT -- high fare amounts:
     fare_amount,
     COUNT(*)
 FROM yellow_flat
-WHERE fare_amount < 0 OR fare_amount > 1000
+WHERE fare_amount > 500 OR fare_amount > 1000
 GROUP BY fare_amount
 ORDER BY fare_amount DESC;
 
 SELECT -- negative fare amounts:
     COUNT(*)
 FROM yellow_flat
-WHERE fare_amount BETWEEN -100 AND 0
+WHERE fare_amount > 200
 ORDER BY fare_amount DESC;
 
 
@@ -154,7 +184,7 @@ ORDER BY COUNT(*) DESC
 LIMIT 10;
 
 
--- 2e: tip amount (data dict does not give standard values, use common reasoning)
+---- 2e: tip amount (data dict does not give standard values, use common reasoning)
 -- notes:
 --    716 values below 0
 --    smallest value is -322
@@ -163,9 +193,7 @@ LIMIT 10;
 --    drop all tips below -$150
 --    convert all tips -150 < t < 0 to positive values
 --    ask richard about 509 tips over $150 (tempted to drop)
---        also 150 is arbitrary, i have just chosen as it seems sensible
-
-
+--        also $150 is arbitrary, i have just chosen as it seems sensible
 SELECT 
     COUNT(*)
 FROM yellow_flat
@@ -173,17 +201,73 @@ WHERE tip_amount > 150
 ORDER BY tip_amount ASC;
 
 
+---- 2f: tolls_amount (data dict says this is a total (sum of taxes and extra?))
+-- notes:
+--    most are 0
+--    only 4000 values above 30
+--    817 values below 0
+--    almost all values below zero are > -50
+-- actions:
+--    convert all negative values above -50 to positive
+--    drop all values above 30 and below -50? 
+--        (again arbitrary numbers but only impacts a small relative number of rows)
+
+SELECT -- see most frequent values
+    tolls_amount,
+    COUNT(*)
+FROM yellow_flat
+GROUP BY tolls_amount
+ORDER BY COUNT(*) DESC
+LIMIT 10;
+
+SELECT -- see how many values are above or below a threshold (0 and 30?)
+    COUNT(*)
+FROM yellow_flat
+WHERE tolls_amount < 0;
+
+SELECT 
+    tolls_amount,
+    COUNT(*)
+FROM yellow_flat
+WHERE tolls_amount < 0
+GROUP BY tolls_amount
+ORDER BY tolls_amount ASC;
+
+
+-- 2g: passenger count
+-- 1
+SELECT 
+    passenger_count,
+    COUNT(*)
+FROM yellow_flat
+GROUP BY passenger_count
+ORDER BY COUNT(*) DESC;
+
+
 
 ------ 3. inspect datetimes
 ---- for now all datetimes, when converted, should be between Jan-Dec 2018
 
--- 3a: pickup datetime
 
-SELECT 
-    TPEP_PICKUP_DATETIME,
-    to_timestamp(TPEP_PICKUP_DATETIME)::datetime
+---- 3a: pickup datetime (should be 2018)
+-- notes:
+--    99% of all values in 2018
+-- actions:
+--    convert non 2018 years to 2018 
+SELECT -- see all years
+    YEAR(to_date(TPEP_PICKUP_DATETIME)),
+    COUNT(*)
 FROM yellow_flat
-LIMIT 10;
+GROUP BY YEAR(to_date(TPEP_PICKUP_DATETIME))
+ORDER BY COUNT(*) DESC;
+
+SELECT -- what are the wrong years and how many rows are there
+    to_date(TPEP_PICKUP_DATETIME),
+    COUNT(*)
+FROM yellow_flat
+WHERE YEAR(to_date(TPEP_PICKUP_DATETIME)) != 2018
+GROUP BY to_date(TPEP_PICKUP_DATETIME)
+ORDER BY COUNT(*) DESC;
 
 
 -- 3b: dropoff datetime
@@ -198,3 +282,9 @@ LIMIT 10;
 ------ 4. inspect pickup and dropoff zones
 ---- should be within 1-262?
 
+SELECT -- see most frequent values
+    dolocationid,
+    COUNT(*)
+FROM yellow_flat
+GROUP BY dolocationid
+ORDER BY dolocationid DESC;
