@@ -74,9 +74,13 @@ ORDER BY COUNT(*) DESC;
 
 
 
-
-
 ------ 2. inspect cash amounts and distances
+
+---- NUMERIC VALUES, two options:
+-- Create error table (good for filtering entire rows when moving to silver)
+-- set error numbers to null (quicker given time constraints)
+
+
 ---- taxi fares expected to be approx < $200
 ---- tolls expected to be approx < $30
 ---- extra should be limited to < $1
@@ -94,11 +98,32 @@ ORDER BY COUNT(*) DESC;
 --    drop all negatives below -100
 --    convert all negatives above -100 to positive values 
 --        (assumption here is the sign is simply incorrect for the 97000 vals)
+
+
+-- set all fares above 500 or below -500 to null
+WITH my_cte AS (
+SELECT
+    CASE
+    WHEN fare_amount < 100 AND fare_amount > 0 THEN '<100'
+    WHEN fare_amount < 200 THEN '100 to 200'
+    WHEN fare_amount < 500 THEN '200 to 500'
+    WHEN fare_amount < 1000 THEN '500 to 1000'
+    ELSE '1000+' END AS price_groups
+FROM yellow_flat
+)
+SELECT 
+    price_groups,
+    COUNT(*)
+FROM my_cte
+GROUP BY price_groups
+ORDER BY COUNT(*) DESC;
+
+
 SELECT -- high fare amounts:
     fare_amount,
     COUNT(*)
 FROM yellow_flat
-WHERE fare_amount < 0 OR fare_amount > 1000
+WHERE fare_amount > 500 OR fare_amount > 1000
 GROUP BY fare_amount
 ORDER BY fare_amount DESC;
 
@@ -170,30 +195,32 @@ LIMIT 10;
 --    ask richard about 509 tips over $150 (tempted to drop)
 --        also $150 is arbitrary, i have just chosen as it seems sensible
 SELECT 
-    COUNT(*)
+    tip_amount
 FROM yellow_flat
-WHERE tip_amount > 150
-ORDER BY tip_amount ASC;
+ORDER BY tip_amount DESC LIMIT 100;
 
 
 ---- 2f: tolls_amount (data dict says this is a total (sum of taxes and extra?))
 -- notes:
---    most are 0
---    only 4000 values above 30
---    817 values below 0
---    almost all values below zero are > -50
+--     above 100 all values are single digits
 -- actions:
---    convert all negative values above -50 to positive
---    drop all values above 30 and below -50? 
---        (again arbitrary numbers but only impacts a small relative number of rows)
+--     convert anything > 120 or < -120 to null
+--     all values -120 < v < 0 will have the sign flipped
 
+WITH my_cte AS (
 SELECT -- see most frequent values
-    tolls_amount,
-    COUNT(*)
+    ROUND(tolls_amount, 0) AS tolls
 FROM yellow_flat
-GROUP BY tolls_amount
-ORDER BY COUNT(*) DESC
-LIMIT 10;
+)
+SELECT
+    tolls,
+    COUNT(*) AS toll_count
+FROM my_cte
+GROUP BY tolls
+ORDER BY tolls DESC;
+
+
+
 
 SELECT -- see how many values are above or below a threshold (0 and 30?)
     COUNT(*)
@@ -207,6 +234,17 @@ FROM yellow_flat
 WHERE tolls_amount < 0
 GROUP BY tolls_amount
 ORDER BY tolls_amount ASC;
+
+
+-- 2g: passenger count
+-- 1
+SELECT 
+    passenger_count,
+    COUNT(*)
+FROM yellow_flat
+GROUP BY passenger_count
+ORDER BY COUNT(*) DESC;
+
 
 
 ------ 3. inspect datetimes
@@ -246,3 +284,25 @@ ORDER BY COUNT(*) DESC;
 ------ 4. inspect pickup and dropoff zones
 ---- should be within 1-262?
 
+SELECT -- see most frequent values
+    dolocationid,
+    COUNT(*)
+FROM yellow_flat
+GROUP BY dolocationid
+ORDER BY dolocationid DESC;
+
+
+---- trip distances
+
+-- cut off distances above 200 miles
+WITH cte1 AS ( 
+SELECT 
+    ROUND(trip_distance, -1) AS distance
+FROM yellow_flat
+)
+SELECT
+    distance,
+    COUNT(distance)
+FROM cte1
+GROUP BY distance
+ORDER BY distance DESC;
