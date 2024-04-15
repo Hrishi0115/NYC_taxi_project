@@ -32,7 +32,8 @@ CREATE OR REPLACE TABLE silver_layer.test.yellow
     trip_distance DECIMAL(10,2),
     congestion_surcharge DECIMAL(10,2),
     airport_fee DECIMAL(10,2),
-    total_amount DECIMAL(10,2)
+    total_amount DECIMAL(10,2),
+    trip_duration_minutes DECIMAL(10,1)
 );
 
 INSERT INTO silver_layer.test.yellow 
@@ -57,53 +58,50 @@ INSERT INTO silver_layer.test.yellow
     trip_distance,
     congestion_surcharge,
     airport_fee,
-    total_amount
+    total_amount,
+    trip_duration_minutes
 )
 -- testing cleaning query for insert silver table
 WITH silver_cte AS (
 SELECT
         CASE 
-        WHEN dolocationid >= 1 AND dolocationid <= 265 THEN dolocationid
+        WHEN dolocationid BETWEEN 1 AND 265 THEN dolocationid
         ELSE 264 END AS -- 264 means unknown in zone mapping
     dolocationid,
         CASE 
-        WHEN pulocationid >= 1 AND pulocationid <= 265 THEN pulocationid
+        WHEN pulocationid BETWEEN 1 AND 265 THEN pulocationid
         ELSE 264 END AS -- 264 means unknown in zone mapping
     pulocationid,
         CASE 
-        WHEN ratecodeid >= 1 AND ratecodeid <= 6 THEN ratecodeid 
+        WHEN ratecodeid BETWEEN 1 AND 6 THEN ratecodeid 
         ELSE 7 END AS -- SET 7 as UNKNOWN FOR RATECODE ID IN DIMENSION TABLE
     ratecodeid,
         CASE 
-        WHEN vendorid NOT IN (1,2) THEN 3 -- SET 3 as UNKNOWN FOR RATECODE ID IN DIMENSION TABLE
-        ELSE vendorid END AS 
+        WHEN vendorid IN (1,2) THEN vendorid -- SET 3 as UNKNOWN FOR RATECODE ID IN DIMENSION TABLE
+        ELSE 3 END AS 
     vendorid,
         CASE 
-        WHEN extra NOT IN (0, 0.5, 1, 4.5, 2.75, -0.5, -1, -2.75, -4.5) THEN NULL
-        WHEN extra < 0 THEN extra*-1
-        ELSE extra END AS
+        WHEN extra IN (0, 0.5, 1, 4.5, 2.75, -0.5, -1, -2.75, -4.5) THEN ABS(extra)
+        ELSE NULL END AS
     extra,
         CASE 
-        WHEN fare_amount > 500 OR fare_amount < -500 THEN NULL
-        WHEN fare_amount BETWEEN -500 AND 0 THEN fare_amount*-1
-        ELSE fare_amount END AS
+        WHEN fare_amount BETWEEN -500 AND 500 THEN ABS(fare_amount)
+        ELSE NULL END AS
     fare_amount,
         CASE
-        WHEN improvement_surcharge NOT IN (-0.3, 0, 0.3) THEN NULL
-        WHEN improvement_surcharge = -0.3 THEN improvement_surcharge*-1
-        ELSE improvement_surcharge END AS 
+        WHEN improvement_surcharge IN (-0.3, 0, 0.3) THEN ABS(improvement_surcharge)
+        ELSE NULL END AS 
     improvement_surcharge,
         CASE 
-        WHEN mta_tax NOT IN (-0.5, 0, 0.5) THEN NULL
-        WHEN mta_tax = -0.5 THEN mta_tax*-0.5
-        ELSE mta_tax END AS 
+        WHEN mta_tax IN (-0.5, 0, 0.5) THEN ABS(mta_tax)
+        ELSE NULL END AS 
     mta_tax,
         CASE
-        WHEN passenger_count >= 0 AND passenger_count <= 6 THEN passenger_count
+        WHEN passenger_count BETWEEN 0 AND 6 THEN passenger_count
         ELSE NULL END AS
     passenger_count,
         CASE
-        WHEN payment_type >= 1 AND payment_type <= 6 THEN payment_type
+        WHEN payment_type BETWEEN 1 AND 6 THEN payment_type
         ELSE 5 END AS --payment type 5 is unknown
     payment_type,
         CASE
@@ -127,21 +125,37 @@ SELECT
     tpep_pickup_date,
     TO_TIME(tpep_pickup_datetime) AS tpep_pickup_time,
         CASE 
-        WHEN ABS(trip_distance) > 200 THEN NULL
-        ELSE ABS(trip_distance) END AS 
+        WHEN ABS(trip_distance) <= 200 THEN ABS(trip_distance)
+        ELSE NULL END AS 
     trip_distance,
         CASE 
-        WHEN congestion_surcharge > 120 THEN NULL
-        ELSE congestion_surcharge END AS
+        WHEN ABS(congestion_surcharge) < 120 THEN ABS(congestion_surcharge)
+        ELSE NULL END AS
     congestion_surcharge,
         CASE 
-        WHEN ABS(airport_fee) NOT IN (0, 1.25) THEN NULL
-        ELSE ABS(airport_fee) END AS 
+        WHEN ABS(airport_fee) IN (0, 1.25) THEN ABS(airport_fee)
+        ELSE NULL END AS 
     airport_fee
 FROM bronze_layer.flattened.yellow_flat
 )  
 SELECT
     *,
-    fare_amount + extra + mta_tax + improvement_surcharge + tip_amount + tolls_amount AS total_amount
+        COALESCE(fare_amount,0) + COALESCE(extra,0) + COALESCE(mta_tax,0) + COALESCE(improvement_surcharge,0) + COALESCE(tip_amount,0) + COALESCE(tolls_amount,0) AS 
+    total_amount,
+        CASE 
+        WHEN TIMEDIFF(second, tpep_pickup_time, tpep_dropoff_time) / 60 < 0 AND ROUND((TIMEDIFF(second, tpep_pickup_time, tpep_dropoff_time) / 60) + 1440 , 1) > 300 
+            THEN NULL
+        WHEN TIMEDIFF(second, tpep_pickup_time, tpep_dropoff_time) / 60 < 0
+            THEN ROUND((TIMEDIFF(second, tpep_pickup_time, tpep_dropoff_time) / 60) + 1440 , 1) 
+        WHEN TIMEDIFF(second, tpep_pickup_time, tpep_dropoff_time) / 60 > 300 
+            THEN NULL
+        ELSE ROUND((TIMEDIFF(second, tpep_pickup_time, tpep_dropoff_time) / 60), 1) END AS 
+    trip_duration_minutes
+    -- trips limited to 5hrs (300 mins) max (justification: trips of 200 miles with time 280 mins exist, so we limit to 300 minutes)
 FROM silver_cte;
 
+
+SELECT *
+FROM silver_layer.test.yellow 
+WHERE trip_distance IS NOT NULL
+ORDER BY trip_distance DESC LIMIT 10;
