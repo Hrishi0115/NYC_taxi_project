@@ -1,7 +1,7 @@
 -- Setup
-USE WAREHOUSE NETT_WH;
-USE DATABASE silver_layer;
-USE SCHEMA test;
+USE WAREHOUSE;
+USE DATABASE;
+USE SCHEMA;
  
 -- source table columns:
 --SHOW COLUMNS IN bronze_layer.flattened.green_flat;
