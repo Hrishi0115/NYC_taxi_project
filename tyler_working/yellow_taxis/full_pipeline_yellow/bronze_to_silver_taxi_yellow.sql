@@ -18,7 +18,7 @@ CREATE OR REPLACE TABLE silver_layer.test.yellow
     vendorid INT,
     extra DECIMAL(10,2), 
     fare_amount DECIMAL(10,2),
-    improvement_surchage DECIMAL(10,2),
+    improvement_surcharge DECIMAL(10,2),
     mta_tax DECIMAL(10,2),
     passenger_count INT,
     payment_type INT,
@@ -44,7 +44,7 @@ INSERT INTO silver_layer.test.yellow
     vendorid,
     extra, 
     fare_amount,
-    improvement_surchage,
+    improvement_surcharge,
     mta_tax,
     passenger_count,
     payment_type,
@@ -109,7 +109,7 @@ SELECT
         WHEN store_and_fwd_flag IS NULL THEN 'U' -- have to be explicit as we use UPPER below
         ELSE UPPER(store_and_fwd_flag) END AS
     store_and_fwd_flag,
-    ABS(tip_amount), -- ask richard about tips (theoretically could be any amount)
+    ABS(tip_amount) AS tip_amount, -- ask richard about tips (theoretically could be any amount)
         CASE
         WHEN ABS(tolls_amount) > 120 THEN NULL
         ELSE ABS(tolls_amount) END AS
@@ -154,10 +154,11 @@ SELECT
     -- trips limited to 5hrs (300 mins) max (justification: trips of 200 miles with time 280 mins exist, so we limit to 300 minutes)
 FROM silver_cte;
 
+SELECT COUNT(*) FROM silver_layer.test.yellow;
 
-SELECT *
-FROM silver_layer.test.yellow 
-WHERE trip_distance IS NOT NULL
-ORDER BY trip_distance DESC LIMIT 10;
+-- SELECT *
+-- FROM silver_layer.test.yellow 
+-- WHERE trip_distance IS NOT NULL
+-- ORDER BY trip_distance DESC LIMIT 10;
 
-SELECT * FROM silver_layer.test.yellow WHERE fare_amount IS NOT NULL ORDER BY fare_amount DESC LIMIT 10;
+-- SELECT * FROM silver_layer.test.yellow WHERE fare_amount IS NOT NULL ORDER BY fare_amount DESC LIMIT 10;
