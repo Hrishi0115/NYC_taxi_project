@@ -31,7 +31,7 @@ CREATE OR REPLACE TABLE silver_layer.test.green
     lpep_pickup_time TIME,
     lpep_dropoff_time TIME,
     trip_distance DECIMAL(10,2),
-    TRIP_TYPE INT,
+    trip_type VARCHAR(15),
     total_amount DECIMAL(10,2),
     trip_duration_minutes DECIMAL(10,1)
 );
@@ -56,7 +56,7 @@ INSERT INTO silver_layer.test.green
     lpep_pickup_date,
     lpep_pickup_time,
     trip_distance,
-    TRIP_TYPE,
+    trip_type,
     total_amount,
     trip_duration_minutes
 )
@@ -108,7 +108,7 @@ SELECT
         WHEN Store_and_fwd_flag IS NULL THEN 'U'
         ELSE UPPER(Store_and_fwd_flag) END AS
     Store_and_fwd_flag,
-    ABS(tip_amount),
+    ABS(tip_amount) AS tip_amount,
         CASE
         WHEN ABS(tolls_amount) > 120 THEN NULL
         ELSE ABS(tolls_amount) END AS
@@ -128,9 +128,10 @@ SELECT
         ELSE NULL END AS
     trip_distance,
         CASE 
-        WHEN TRIP_TYPE IN (1, 2) THEN TRIP_TYPE
-        ELSE 3 END AS
-    TRIP_TYPE
+        WHEN trip_type = 1 THEN 'Street-hail'
+        WHEN trip_type = 2 THEN 'Dispatch'
+        ELSE 'Unknown' END AS
+    trip_type
     FROM bronze_layer.flattened.green_flat
 )
 
