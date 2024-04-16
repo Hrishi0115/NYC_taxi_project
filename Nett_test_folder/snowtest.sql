@@ -131,9 +131,41 @@ LIMIT 10;
 
 
 SELECT
-    Payment_type,
+    CASE
+    WHEN TIP_AMOUNT > 500,
     COUNT(*)
 FROM green_flat
-GROUP BY Payment_type
+GROUP BY TIP_AMOUNT
 ORDER BY COUNT(*) DESC
 LIMIT 10;
+
+-- 2f: Notes about tolls_amount:
+-- Above 102, all values for tolls are single digit.
+-- Actions:
+ -- Convert anything > 120 or <-120 null
+ -- all values -120 
+WITH my_cte AS (
+SELECT -- see most frequent values
+    ROUND(tolls_amount, 0) AS tolls
+FROM yellow_flat
+)
+SELECT
+    tolls,
+    COUNT(*) AS toll_count
+FROM my_cte
+GROUP BY tolls
+ORDER BY tolls DESC;
+
+
+-- 2g: Notes about trip distance:
+-- Above 200 mile cut off 
+-- Actions:
+ -- Convert anything > 120 or <-120 null
+ -- all values -120 
+SELECT
+    TRIP_DISTANCE,
+    COUNT(*)
+FROM green_flat
+GROUP BY TRIP_DISTANCE
+ORDER BY COUNT(*) DESC
+

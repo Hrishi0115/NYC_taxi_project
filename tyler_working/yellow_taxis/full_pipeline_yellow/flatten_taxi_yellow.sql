@@ -1,11 +1,11 @@
 -- Setup
 USE WAREHOUSE compute_wh;
-USE DATABASE adf_test;
-USE SCHEMA adf_flattening;
+USE DATABASE bronze_layer;
+USE SCHEMA flattened;
 
 
 -- create flat yellow taxi table in bronze layer
-CREATE OR REPLACE TABLE adf_yellow_flat AS 
+CREATE OR REPLACE TABLE bronze_layer.flattened.yellow_flat AS 
 SELECT
     $1:DOLocationID::int as DOLocationID,
     $1:PULocationID::int as PULocationID,
@@ -30,6 +30,6 @@ FROM adf_layer.adf_landing.yellow_in
 ;
 
 
-SELECT COUNT(*) FROM adf_test.adf_flattening.adf_yellow_flat;
+--SELECT COUNT(*) FROM adf_test.adf_flattening.adf_yellow_flat;
 --SHOW COLUMNS IN adf_yellow_flat;
 
