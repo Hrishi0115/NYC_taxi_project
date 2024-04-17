@@ -1,0 +1,31 @@
+
+---- see documentation for silver tables
+---- this script validates correct transformations have been applied
+
+
+-- create error table for silver layer yellow taxis
+DROP TABLE IF EXISTS error_checking.silver.yellow_errors;
+CREATE OR REPLACE TABLE error_checking.silver.yellow_errors
+(
+    row_id INT,
+    message STRING -- message will change depending on test
+);
+
+
+-- 1. dolocationid column
+-- should be between 1-265, no nulls
+INSERT INTO error_checking.silver.yellow_errors
+SELECT
+    id,
+    'invalid dolocationid'
+FROM silver_layer.test.yellow
+WHERE dolocationid NOT BETWEEN 1 AND 265
+   OR dolocationid IS NULL;
+
+
+
+
+
+
+-- error table should be empty
+SELECT COUNT(*) FROM error_checking.silver.yellow_errors;
