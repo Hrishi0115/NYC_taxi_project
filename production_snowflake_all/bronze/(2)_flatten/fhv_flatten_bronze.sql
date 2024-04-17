@@ -1,6 +1,6 @@
 -- FHV CREATE AND INSERT BRONZE FHV FLATTENED TABLE
 
-CREATE OR REPLACE TABLE fhv_pre2019_flat_data AS
+CREATE OR REPLACE TABLE bronze_layer.flattened.fhv_flat AS
 SELECT
   $1:dispatching_base_num::string as dispatching_base_num,
   $1:dropOff_datetime::string as dropOff_datetime,

@@ -4,7 +4,7 @@ USE DATABASE bronze_layer;
 USE SCHEMA json;
 
 -- azure stage for triathlon azure blob using SAS token
-CREATE OR REPLACE STAGE yellow_2018_onwards_azure_stage
+CREATE OR REPLACE STAGE bronze_layer.json.yellow_2018_onwards_azure_stage
 url = 'azure://triathlonnyc.blob.core.windows.net/output/yellow/'
 credentials = (AZURE_SAS_TOKEN = 'sp=rl&st=2024-04-10T13:48:21Z&se=2024-04-19T21:48:21Z&spr=https&sv=2022-11-02&sr=c&sig=gnfFLDUs19AGWxqa10Hp%2BQctVrHQe6I6DC2s2qhWOns%3D')
 ;
@@ -19,21 +19,21 @@ TYPE = PARQUET
 
 -- -- can now see inside file on azure blob
 -- -- 102871387 rows 
-SELECT $1
-from @yellow_2018_onwards_azure_stage
-(file_format => parquet_taxis_yellow, pattern => '.*yellow_tripdata_2018.*')
-LIMIT 10;
+-- SELECT $1
+-- from @yellow_2018_onwards_azure_stage
+-- (file_format => parquet_taxis_yellow, pattern => '.*yellow_tripdata_2018.*')
+-- LIMIT 10;
 
 -- create bronze json table
-CREATE OR REPLACE TABLE yellow_from_2018_in (taxi_col VARIANT);
+CREATE OR REPLACE TABLE bronze_layer.json.yellow_from_2018_in (taxi_col VARIANT);
 
 -- copy staged data into snowflake table
-COPY INTO yellow_from_2018_in
+COPY INTO bronze_layer.json.yellow_from_2018_in
 FROM @yellow_2018_onwards_azure_stage
 file_format = parquet_taxis_yellow
 pattern = '.*yellow_tripdata_2018.*';
 
 -- inspect inserted data
-USE WAREHOUSE tyler_wh;
-SELECT COUNT(*) FROM yellow_from_2018_in;
+-- USE WAREHOUSE tyler_wh;
+-- SELECT COUNT(*) FROM bronze_layer.json.yellow_from_2018_in;
 
