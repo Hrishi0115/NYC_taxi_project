@@ -1,6 +1,7 @@
 -- FHV HV INSERT INTO GOLD
 
 INSERT INTO gold_level.public.fhv_trip_fact_table(
+    HVFHS_LICENSE_NUMBER,
     DISPATCHING_BASE_NUMBER,
 	ORIGINATING_BASE_NUMBER,
 	PU_DATE_ID,
@@ -33,6 +34,7 @@ INSERT INTO gold_level.public.fhv_trip_fact_table(
     )
 
 SELECT 
+    hvfhs_license_number,
     dispatching_base_number,
     originating_base_number,
     pickup_date.date_id,
