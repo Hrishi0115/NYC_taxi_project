@@ -29,7 +29,8 @@ CREATE OR REPLACE TABLE bronze_layer.json.fhv_from_2018_in (taxi_col VARIANT);
 -- copy staged data into snowflake table
 COPY INTO bronze_layer.json.fhv_from_2018_in
 FROM @all_fhv_azure_stage
-file_format = parquet_taxis;
+file_format = parquet_taxis
+pattern = '.*fhv_tripdata_2018.*';
 
 -- -- inspect inserted data
 -- SELECT COUNT(*) FROM bronze_layer.json.fhv_from_2018_in;

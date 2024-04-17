@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS gold_level.public.fhv_trip_fact_table;
 -- create fhv and fhvhv fact table
 create or replace TABLE gold_level.public.fhv_trip_fact_table (
     FHV_TRIP_ID NUMBER(38,0) NOT NULL autoincrement start 1 increment 1 noorder,
+    HVFHS_LICENSE_NUMBER VARCHAR(15),
     DISPATCHING_BASE_NUMBER VARCHAR(15),
     ORIGINATING_BASE_NUMBER VARCHAR(15),
     PU_DATE_ID NUMBER(38,0),
