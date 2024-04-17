@@ -153,6 +153,46 @@ LIMIT 5)
 SELECT to_date(dropoff_datetime), to_time(dropoff_datetime)
 FROM cte;
 
+-- look at date diff
+SELECT datediff(year,dropoff_date,pickup_date) AS trip_length_days
+FROM silver_layer.test.fhv
+WHERE dropoff_date IS NOT NULL AND pickup_date IS NOT NULL
+ORDER BY trip_length_days DESC
+LIMIT 20
+;
+
+-- entry where drop off date in 2021
+SELECT datediff(day,pickup_date, dropoff_date)
+FROM silver_layer.test.fhv
+WHERE id = 85091821
+;
+-- WHERE id = 85091821
+SELECT datediff(day,pickup_date, dropoff_date) AS length_days, count(*)
+FROM silver_layer.test.fhv
+GROUP BY datediff(day,pickup_date, dropoff_date)
+ORDER BY length_days DESC
+LIMIT 10;
+
+
+-- insert new column that gives length_days
+
+
+
+-- look at years
+SELECT year(dropoff_date) AS yr, count(*)
+FROM silver_layer.test.fhv
+GROUP BY year(dropoff_date)
+ORDER BY yr DESC
+;
+
+SELECT year(pickup_date) AS yr, count(*)
+FROM silver_layer.test.fhv
+GROUP BY year(pickup_date)
+ORDER BY yr DESC
+;
+
+
+
 
 -- things to note re cleaning FHV data
 -- not all dispatching_base_num are in caps, upper() to get all in same format
