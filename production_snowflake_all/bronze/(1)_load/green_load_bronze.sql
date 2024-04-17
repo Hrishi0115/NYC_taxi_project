@@ -10,10 +10,10 @@ credentials = (AZURE_SAS_TOKEN = 'sp=rl&st=2024-04-10T13:48:21Z&se=2024-04-19T21
 ;
 
 -- inspect inside stage (change end of url to see different files)
-list @all_green_azure_stage;
+list @bronze_layer.json.all_green_azure_stage;
 
 -- -- parquet file format 
-create or replace FILE FORMAT parquet_taxis
+create or replace FILE FORMAT bronze_layer.json.parquet_taxis_green
 TYPE = PARQUET
 ;
 
@@ -28,8 +28,9 @@ CREATE OR REPLACE TABLE bronze_layer.json.green_from_2018_in (taxi_col VARIANT);
 
 -- -- copy staged data into snowflake table
 COPY INTO bronze_layer.json.green_from_2018_in
-FROM @all_green_azure_stage
-file_format = parquet_taxis;
+FROM @bronze_layer.json.all_green_azure_stage
+file_format = parquet_taxis_green
+pattern => '.*green_tripdata_2018.*';
 
 -- -- inspect inserted data
 -- SELECT COUNT(*) FROM bronze_layer.json.green_from_2018_in;
