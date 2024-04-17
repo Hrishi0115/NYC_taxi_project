@@ -14,8 +14,8 @@ CREATE OR REPLACE TABLE error_checking.silver.yellow_errors
 
 
 
------- populate error table with values that dont conform to silver cleaning/transformations outlined in data dictionary
 
+------ populate error table with values that dont conform to silver cleaning/transformations outlined in data dictionary ------
 
 -- 1. dolocationid column
 -- should be between 1-265, no nulls
@@ -39,7 +39,19 @@ WHERE pulocationid NOT BETWEEN 1 AND 265
    OR pulocationid IS NULL;
 
 
+-- 3. ratecodeid column
+-- should be between 1-265, no nulls
+INSERT INTO error_checking.silver.yellow_errors
+SELECT
+    id,
+    'invalid ratecodeid'
+FROM silver_layer.test.yellow
+WHERE ratecodeid NOT BETWEEN 1 AND 7
+   OR ratecodeid IS NULL;
 
 
--- error table should be empty
+
+
+
+---- error table should be empty ----
 SELECT COUNT(*) FROM error_checking.silver.yellow_errors;
