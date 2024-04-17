@@ -1,41 +1,3 @@
--- Setup
-USE WAREHOUSE tyler_wh;
-USE DATABASE silver_layer;
-USE SCHEMA test;
-
--- source table columns:
---SHOW COLUMNS IN bronze_layer.flattened.yellow_flat;
-
-DROP TABLE IF EXISTS silver_layer.test.yellow;
-
--- writing silver ctas all together
-CREATE OR REPLACE TABLE silver_layer.test.yellow 
-(
-    id INT AUTOINCREMENT PRIMARY KEY,
-    dolocationid INT,
-    pulocationid INT,
-    ratecodeid INT,
-    vendorid INT,
-    extra DECIMAL(10,2), 
-    fare_amount DECIMAL(10,2),
-    improvement_surcharge DECIMAL(10,2),
-    mta_tax DECIMAL(10,2),
-    passenger_count INT,
-    payment_type INT,
-    store_and_fwd_flag STRING(1),
-    tip_amount DECIMAL(10,2),
-    tolls_amount DECIMAL(10,2),
-    tpep_dropoff_date DATE,
-    tpep_dropoff_time TIME,
-    tpep_pickup_date DATE,
-    tpep_pickup_time TIME,
-    trip_distance DECIMAL(10,2),
-    congestion_surcharge DECIMAL(10,2),
-    airport_fee DECIMAL(10,2),
-    total_amount DECIMAL(10,2),
-    trip_duration_minutes DECIMAL(10,1)
-);
-
 INSERT INTO silver_layer.test.yellow 
 (
     dolocationid,
@@ -154,11 +116,4 @@ SELECT
     -- trips limited to 5hrs (300 mins) max (justification: trips of 200 miles with time 280 mins exist, so we limit to 300 minutes)
 FROM silver_cte;
 
--- SELECT COUNT(*) FROM silver_layer.test.yellow;
 
--- SELECT *
--- FROM silver_layer.test.yellow 
--- WHERE trip_distance IS NOT NULL
--- ORDER BY trip_distance DESC LIMIT 10;
-
--- SELECT * FROM silver_layer.test.yellow WHERE fare_amount IS NOT NULL ORDER BY fare_amount DESC LIMIT 10;

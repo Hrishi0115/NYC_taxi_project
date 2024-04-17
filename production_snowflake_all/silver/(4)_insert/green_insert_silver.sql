@@ -1,39 +1,3 @@
--- Setup
-USE WAREHOUSE NETT_WH;
-USE DATABASE silver_layer;
-USE SCHEMA test;
- 
--- source table columns:
---SHOW COLUMNS IN bronze_layer.flattened.green_flat;
-
-DROP TABLE IF EXISTS silver_layer.test.green;
-
-
-CREATE OR REPLACE TABLE silver_layer.test.green
-(
-    id INT AUTOINCREMENT PRIMARY KEY,
-    dolocationid INT,
-    pulocationid INT,
-    ratecodeid INT,
-    vendorid INT,
-    extra DECIMAL(10,2),
-    fare_amount DECIMAL(10,2),
-    improvement_surcharge DECIMAL(10,2),
-    MTA_TAX DECIMAL(10,2),
-    passenger_count INT,
-    payment_type INT,
-    Store_and_fwd_flag STRING(1),
-    tip_amount DECIMAL(10,2),
-    tolls_amount DECIMAL(10,2),
-    lpep_dropoff_date DATE,
-    lpep_pickup_date DATE,
-    lpep_pickup_time TIME,
-    lpep_dropoff_time TIME,
-    trip_distance DECIMAL(10,2),
-    trip_type VARCHAR(15),
-    total_amount DECIMAL(10,2),
-    trip_duration_minutes DECIMAL(10,1)
-);
 
 INSERT INTO silver_layer.test.green 
 (
@@ -59,7 +23,6 @@ INSERT INTO silver_layer.test.green
     total_amount,
     trip_duration_minutes
 )
-
 WITH silver_cte AS (
 SELECT
         CASE
@@ -133,7 +96,6 @@ SELECT
     trip_type
     FROM bronze_layer.flattened.green_flat
 )
-
 SELECT
 *, 
 COALESCE(fare_amount,0) + COALESCE(extra,0) + COALESCE(mta_tax,0) + COALESCE(improvement_surcharge,0) + COALESCE(tip_amount,0) + COALESCE(tolls_amount,0) AS
@@ -148,31 +110,3 @@ total_amount,
     ELSE ROUND((TIMEDIFF(second, lpep_pickup_time, lpep_dropoff_time) / 60), 1) END AS
     trip_duration_minutes
 FROM silver_cte;
-
--- SELECT * FROM silver_layer.test.green WHERE trip_duration_minutes > 1000;
--- SELECT MAX(trip_duration_minutes) FROM silver_layer.test.green;
--- --SELECT DISTINCT trip_type FROM silver_layer.test.green LIMIT 10;
-
-
-
-
--- SELECT
---     -- MAX(dolocationid),
---     -- MIN(dolocationid),
---     -- MAX(pulocationid),
---     -- MIN(pulocationid),
---     -- MAX(extra),
---     -- MIN(extra),
---     -- MAX(fare_amount),
---     -- MIN(fare_amount),
---     -- MAX(improvement_surcharge),
---     -- MIN(improvement_surcharge)
---     DISTINCT payment_type
--- FROM test_silver_cte;
-
-
-    
-
---SELECT MAX(total_amount) FROM silver_layer.test.green LIMIT 10;
---SELECT * FROM silver_layer.test.green ORDER BY total_amount DESC LIMIT 10;
-select COUNT(*) FROM silver_layer.test.green;

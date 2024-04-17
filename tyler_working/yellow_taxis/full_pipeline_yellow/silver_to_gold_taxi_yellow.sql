@@ -2,7 +2,6 @@ USE WAREHOUSE tyler_wh;
 USE DATABASE gold_level;
 USE SCHEMA public;
 
-
 -- Insert all yellow data (check no limit at end of statement)
 INSERT INTO gold_level.public.trip_fact_table
 (
@@ -70,13 +69,21 @@ LEFT JOIN gold_level.public.trip_type_dim AS trip_type_dim
 
 
 
-
 ------ END OF INSERT QUERY ------
 --------------------------------------
 
 
+-- validate insert amount for 2018
+-- SELECT COUNT(*) FROM silver_layer.test.yellow; -- 102871387
+-- SELECT COUNT(*) FROM silver_layer.test.green; -- 8899718 
+-- SELECT 102871387 + 8899718; -- total should be 111771105
+-- SELECT COUNT(*) FROM gold_level.public.trip_fact_table;
+
+
+
 -- -- reset fact table (need to drop AND create):
 -- -- send back to clarissa (final create table for fact table)
+-- USE WAREHOUSE tyler_wh;
 -- DROP TABLE IF EXISTS gold_level.public.trip_fact_table;
 -- create or replace table gold_level.public.trip_fact_table
 -- (
@@ -115,7 +122,7 @@ LEFT JOIN gold_level.public.trip_type_dim AS trip_type_dim
 -- -- testing fact table function before inserting all data
 
 -- -- inspect table
--- SELECT * FROM gold_level.public.trip_fact_table;
+-- SELECT COUNT(*) FROM gold_level.public.trip_fact_table;
 
 -- -- insert to table
 -- INSERT INTO gold_level.public.trip_fact_table
