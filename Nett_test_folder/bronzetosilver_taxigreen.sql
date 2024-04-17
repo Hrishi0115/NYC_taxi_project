@@ -175,4 +175,5 @@ FROM silver_cte;
     
 
 --SELECT MAX(total_amount) FROM silver_layer.test.green LIMIT 10;
-SELECT * FROM silver_layer.test.green ORDER BY total_amount DESC LIMIT 10;
+--SELECT * FROM silver_layer.test.green ORDER BY total_amount DESC LIMIT 10;
+select COUNT(*) FROM silver_layer.test.green;

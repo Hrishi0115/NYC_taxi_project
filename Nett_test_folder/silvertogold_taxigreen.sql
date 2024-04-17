@@ -2,9 +2,6 @@ USE WAREHOUSE NETT_WH;
 USE DATABASE gold_level;
 USE SCHEMA public;
 
-SELECT * FROM gold_level.public.trip_fact_table;
---TRUNCATE TABLE gold_level.public.trip_fact_table;
-
 --Insert all green data into fact table.
 INSERT INTO gold_level.public.trip_fact_table
 (
