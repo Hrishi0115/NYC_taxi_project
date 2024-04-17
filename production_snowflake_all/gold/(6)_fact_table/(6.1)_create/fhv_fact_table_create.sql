@@ -35,4 +35,4 @@ create or replace TABLE gold_level.public.fhv_trip_fact_table (
     WAV_REQUEST_FLAG VARCHAR(1),
     WAV_MATCH_FLAG VARCHAR(1),
     primary key (FHV_TRIP_ID)
-);
+);DFV
