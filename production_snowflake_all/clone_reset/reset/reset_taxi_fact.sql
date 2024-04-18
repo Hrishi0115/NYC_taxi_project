@@ -9,7 +9,6 @@ SELECT *
 FROM clone.gold.FACT_TAXI_TRIP2018
 ;
 
-
+-- check taxi fact table has been reset row count of 110568004 (n rows for all 2018)
 SELECT COUNT(*) FROM nyc_taxi.gold.fact_taxi_trip; --110568004
 
-USE WAREHOUSE tyler_wh;

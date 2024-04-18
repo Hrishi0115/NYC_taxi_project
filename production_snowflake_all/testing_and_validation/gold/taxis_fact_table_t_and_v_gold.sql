@@ -14,11 +14,22 @@ CREATE OR REPLACE TABLE error_checking.gold.yellow_errors
 -- should be 1, 2 or null
 INSERT INTO error_checking.gold.yellow_errors
 SELECT
-    id,
+    taxi_trip_id,
     'taxi_colour_id'
 FROM nyc_taxi.gold.fact_taxi_trip
-WHERE dolocationid NOT IN (1,2)
-   AND dolocationid IS NOT NULL;
+WHERE taxi_colour_id NOT IN (1,2)
+   AND taxi_colour_id IS NOT NULL;
+
+
+-- 2. vendorid column
+-- should be between 1-3, no nulls
+INSERT INTO error_checking.gold.yellow_errors
+SELECT
+    taxi_trip_id,
+    'invalid vendor_id'
+FROM nyc_taxi.gold.fact_taxi_trip
+WHERE vendor_id NOT IN (1,2,3)
+   OR vendor_id IS NULL;
 
 
 
