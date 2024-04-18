@@ -199,10 +199,10 @@ WHERE YEAR(tpep_dropoff_date) NOT BETWEEN 2018 AND 2024
 INSERT INTO error_checking.silver.green_errors
 SELECT
     id,
-    'tpep_dropoff_time'
+    'lpep_dropoff_time'
 FROM nyc_taxi.silver.green
-WHERE tpep_dropoff_time < 0
-    AND tpep_dropoff_time IS NOT NULL;
+WHERE (lpep_pickup_time NOT BETWEEN TIME('00:00:00') AND TIME('23:59:50'))
+    AND lpep_dropoff_time IS NOT NULL;
 
 -- 16. tpep_pickup_date column
 -- should be between 2018-2024, nulls allowed
