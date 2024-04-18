@@ -38,5 +38,3 @@ LEFT JOIN gold.time_dim AS dropoff_time
     ON silver.dropoff_time = dropoff_time.time
 ;
 
-use warehouse cecily_l;
-
