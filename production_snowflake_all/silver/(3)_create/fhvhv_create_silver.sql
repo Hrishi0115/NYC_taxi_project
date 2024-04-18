@@ -1,6 +1,8 @@
 -- CREATE SILVER FHV HV TABLE
 
-CREATE OR REPLACE TABLE silver_layer.test.fhvhv (
+use database nyc_taxi;
+use schema silver;
+CREATE OR REPLACE TABLE silver.fhvhv (
   id INT AUTOINCREMENT PRIMARY KEY,
   hvfhs_license_number string,
   dispatching_base_number string,

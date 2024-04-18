@@ -1,8 +1,9 @@
 
-DROP TABLE IF EXISTS gold_level.public.fhv_trip_fact_table;
+DROP TABLE IF EXISTS gold.fact_fhv_trip;
 
 -- create fhv and fhvhv fact table
-create or replace TABLE gold_level.public.fhv_trip_fact_table (
+
+create or replace TABLE gold.fact_fhv_trip (
     FHV_TRIP_ID NUMBER(38,0) NOT NULL autoincrement start 1 increment 1 noorder,
     HVFHS_LICENSE_NUMBER VARCHAR(15),
     DISPATCHING_BASE_NUMBER VARCHAR(15),
@@ -35,4 +36,4 @@ create or replace TABLE gold_level.public.fhv_trip_fact_table (
     WAV_REQUEST_FLAG VARCHAR(1),
     WAV_MATCH_FLAG VARCHAR(1),
     primary key (FHV_TRIP_ID)
-);DFV
+);
