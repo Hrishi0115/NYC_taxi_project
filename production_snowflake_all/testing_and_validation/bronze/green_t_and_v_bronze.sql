@@ -1,4 +1,4 @@
-USE WAREHOUSE tyler_big_wh;
+
 -- list azure stage
 list  @nyc_taxi.bronze.all_green_azure_stage;
 

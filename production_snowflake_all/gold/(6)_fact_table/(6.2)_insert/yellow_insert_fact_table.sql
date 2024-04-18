@@ -63,3 +63,4 @@ LEFT JOIN nyc_taxi.gold.trip_type_dim AS trip_type_dim
     ON LOWER(trip_type_dim.trip_type) = 'street-hail'
 -- LIMIT 5
 ;
+
