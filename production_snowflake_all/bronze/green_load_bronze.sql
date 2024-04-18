@@ -4,7 +4,7 @@ USE DATABASE bronze_layer;
 USE SCHEMA json;
 
 -- azure stage for triathlon azure blob using SAS token
-CREATE OR REPLACE STAGE bronze_layer.json.all_green_azure_stage
+CREATE OR REPLACE STAGE nyc_taxi.bronze.green_from_2018_in.json.all_green_azure_stage
 url = 'azure://triathlonnyc.blob.core.windows.net/output/green/'
 credentials = (AZURE_SAS_TOKEN = 'sp=rl&st=2024-04-10T13:48:21Z&se=2024-04-19T21:48:21Z&spr=https&sv=2022-11-02&sr=c&sig=gnfFLDUs19AGWxqa10Hp%2BQctVrHQe6I6DC2s2qhWOns%3D')
 ;
