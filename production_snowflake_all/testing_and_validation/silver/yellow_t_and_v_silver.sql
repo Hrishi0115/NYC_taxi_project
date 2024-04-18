@@ -148,7 +148,6 @@ FROM silver_layer.test.yellow
 WHERE tip_amount < 0
     AND tip_amount IS NOT NULL;
 
-
 -- 13. tolls_amount column
 -- should not be a negative number,  nulls allowed
 INSERT INTO error_checking.silver.yellow_errors
@@ -159,9 +158,86 @@ FROM silver_layer.test.yellow
 WHERE tolls_amount NOT BETWEEN 0 AND 120
     AND tolls_amount IS NOT NULL;
 
+-- 14. lpep_dropoff_date column
+-- should be between 2018-2024, nulls allowed
+INSERT INTO error_checking.silver.yellow_errors
+SELECT
+    id,
+    'invalid lpep_dropoff_date'
+FROM silver_layer.test.yellow
+WHERE YEAR(lpep_dropoff_date) NOT BETWEEN 2018 AND 2024
+    AND lpep_dropoff_date IS NOT NULL;
 
+-- 15. lpep_dropoff_time column
+-- should not be a negative number, nulls allowed
+INSERT INTO error_checking.silver.yellow_errors
+SELECT
+    id,
+    'lpep_dropoff_time'
+FROM silver_layer.test.yellow
+WHERE lpep_dropoff_time < 0
+    AND lpep_dropoff_time IS NOT NULL;
+
+-- 16. lpep_pickup_date column
+-- should be between 2018-2024, nulls allowed
+INSERT INTO error_checking.silver.yellow_errors
+SELECT
+    id,
+    'invalid lpep_pickup_date'
+FROM silver_layer.test.yellow
+WHERE YEAR(lpep_pickup_date) NOT BETWEEN 2018 AND 2024
+    AND lpep_pickup_date IS NOT NULL;
+
+-- 17. lpep_pickup_time column
+-- should not be a negative number, nulls allowed
+INSERT INTO error_checking.silver.yellow_errors
+SELECT
+    id,
+    'lpep_pickup_time'
+FROM silver_layer.test.yellow
+WHERE lpep_pickup_time < 0
+    AND lpep_pickup_time IS NOT NULL;
+
+-- 18. trip_distance column
+-- Should be between 0-200, or nulls
+
+INSERT INTO error_checking.silver.yellow_errors
+SELECT
+    id,
+    'invalid trip_distance'
+FROM silver_layer.test.yellow
+WHERE trip_distance NOT BETWEEN 0 AND 200
+   AND trip_distance IS NOT NULL;
+
+-- 19. total_amount column
+-- should not be a negative number, nulls allowed
+INSERT INTO error_checking.silver.yellow_errors
+SELECT
+    id,
+    'total_amount'
+FROM silver_layer.test.yellow
+WHERE total_amount < 0
+    AND total_amount IS NOT NULL;
+
+-- 20. airport_fee column
+-- should in (0, 1.25), no nulls.
+INSERT INTO error_checking.silver.yellow_errors
+SELECT
+    id,
+    'invalid airport_fee'
+FROM silver_layer.test.yellow
+WHERE airport_fee NOT IN (0,1.25)
+   OR airport_fee IS NULL;
+
+-- 21. congestion_surcharge column
+-- should in (0-120), or nulls.
+INSERT INTO error_checking.silver.yellow_errors
+SELECT
+    id,
+    'invalid congestion_surcharge'
+FROM silver_layer.test.yellow
+WHERE congestion_surcharge BETWEEN 0 AND 120
+   OR congestion_surcharge IS NOT NULL;
 
 ---- final check: error table should be empty ----
 SELECT COUNT(*) FROM error_checking.silver.yellow_errors;
-
-
