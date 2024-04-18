@@ -175,7 +175,7 @@ SELECT
     id,
     'tpep_dropoff_time'
 FROM nyc_taxi.silver.yellow
-WHERE (tpep_pickup_time NOT BETWEEN TIME('00:00:00') AND TIME('23:59:50'))
+WHERE (tpep_dropoff_time NOT BETWEEN TIME('00:00:00') AND TIME('23:59:59'))
     AND tpep_dropoff_time IS NOT NULL;
 
 -- 16. tpep_pickup_date column
@@ -195,7 +195,7 @@ SELECT
     id,
     'tpep_pickup_time'
 FROM nyc_taxi.silver.yellow
-WHERE tpep_pickup_time < 0
+WHERE (tpep_pickup_time NOT BETWEEN TIME('00:00:00') AND TIME('23:59:59'))
     AND tpep_pickup_time IS NOT NULL;
 
 -- 18. trip_distance column
@@ -220,14 +220,14 @@ WHERE total_amount < 0
     AND total_amount IS NOT NULL;
 
 -- 20. airport_fee column
--- should in (0, 1.25), no nulls.
+-- should in (0, 1.25), nulls allowed.
 INSERT INTO error_checking.silver.yellow_errors
 SELECT
     id,
     'invalid airport_fee'
 FROM nyc_taxi.silver.yellow
 WHERE airport_fee NOT IN (0,1.25)
-   OR airport_fee IS NOT NULL;
+   AND airport_fee IS NOT NULL;
 
 -- 21. congestion_surcharge column
 -- should in (0-120), or nulls.
@@ -237,7 +237,8 @@ SELECT
     'invalid congestion_surcharge'
 FROM nyc_taxi.silver.yellow
 WHERE congestion_surcharge BETWEEN 0 AND 120
-   OR congestion_surcharge IS NOT NULL;
+   AND congestion_surcharge IS NOT NULL;
 
 ---- final check: error table should be empty ----
 SELECT COUNT(*) FROM error_checking.silver.yellow_errors;
+
