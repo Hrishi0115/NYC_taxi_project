@@ -1,4 +1,4 @@
-USE WAREHOUSE tyler_wh;
+
 
 -- check all rows have been added (taxi_fact rows should be = yellow_silver rows + bronze_silver rows)
 SELECT

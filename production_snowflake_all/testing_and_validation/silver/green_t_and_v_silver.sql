@@ -147,7 +147,7 @@ WHERE payment_type NOT IN (1, 2, 3, 4, 5, 6)
 INSERT INTO error_checking.silver.green_errors
 SELECT
     id,
-    'store_and_fwd_flag'
+    'invalid store_and_fwd_flag'
 FROM nyc_taxi.silver.green
 WHERE store_and_fwd_flag NOT IN ('Y', 'N', 'U')
    OR store_and_fwd_flag IS NULL;
@@ -209,7 +209,7 @@ WHERE YEAR(lpep_pickup_date) NOT BETWEEN 2018 AND 2024
 INSERT INTO error_checking.silver.green_errors
 SELECT
     id,
-    'lpep_pickup_time'
+    'invalid lpep_pickup_time'
 FROM nyc_taxi.silver.green
 WHERE (lpep_pickup_time NOT BETWEEN TIME('00:00:00') AND TIME('23:59:59'))
     AND lpep_pickup_time IS NOT NULL;
@@ -230,7 +230,7 @@ WHERE trip_distance NOT BETWEEN 0 AND 200
 INSERT INTO error_checking.silver.green_errors
 SELECT
     id,
-    'total_amount'
+    'invalid total_amount'
 FROM nyc_taxi.silver.green
 WHERE total_amount < 0
     AND total_amount IS NOT NULL;
@@ -246,5 +246,14 @@ FROM nyc_taxi.silver.green
 WHERE trip_type NOT IN ('Street-hail', 'Dispatch', 'Unknown')
    OR trip_type IS NULL;
 
+
 --Error table should be empty.
 SELECT COUNT(*) FROM error_checking.silver.green_errors;
+
+
+-- -- view error rows:
+-- SELECT
+--     silver.*
+-- FROM nyc_taxi.silver.green AS silver
+-- INNER JOIN error_checking.silver.green_errors AS errors
+--     ON silver.id = errors.row_id; 

@@ -117,4 +117,3 @@ SELECT
 FROM silver_cte;
 
 
-

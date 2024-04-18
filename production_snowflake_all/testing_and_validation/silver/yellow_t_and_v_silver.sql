@@ -132,7 +132,7 @@ WHERE payment_type NOT IN (1,2,3,4,5,6)
 INSERT INTO error_checking.silver.yellow_errors
 SELECT
     id,
-    'store_and_fwd_flag'
+    'invalid store_and_fwd_flag'
 FROM nyc_taxi.silver.yellow
 WHERE store_and_fwd_flag NOT IN ('Y', 'N', 'U')
    OR store_and_fwd_flag IS NULL;
@@ -173,7 +173,7 @@ WHERE YEAR(tpep_dropoff_date) NOT BETWEEN 2018 AND 2024
 INSERT INTO error_checking.silver.yellow_errors
 SELECT
     id,
-    'tpep_dropoff_time'
+    'invalid tpep_dropoff_time'
 FROM nyc_taxi.silver.yellow
 WHERE (tpep_dropoff_time NOT BETWEEN TIME('00:00:00') AND TIME('23:59:59'))
     AND tpep_dropoff_time IS NOT NULL;
@@ -193,7 +193,7 @@ WHERE YEAR(tpep_pickup_date) NOT BETWEEN 2018 AND 2024
 INSERT INTO error_checking.silver.yellow_errors
 SELECT
     id,
-    'tpep_pickup_time'
+    'invalid tpep_pickup_time'
 FROM nyc_taxi.silver.yellow
 WHERE (tpep_pickup_time NOT BETWEEN TIME('00:00:00') AND TIME('23:59:59'))
     AND tpep_pickup_time IS NOT NULL;
@@ -214,10 +214,10 @@ WHERE trip_distance NOT BETWEEN 0 AND 200
 INSERT INTO error_checking.silver.yellow_errors
 SELECT
     id,
-    'total_amount'
+    'invalid total_amount'
 FROM nyc_taxi.silver.yellow
 WHERE total_amount < 0
-    AND total_amount IS NOT NULL;
+    AND total_amount IS NOT NULL;  
 
 -- 20. airport_fee column
 -- should in (0, 1.25), nulls allowed.
@@ -241,4 +241,13 @@ WHERE congestion_surcharge BETWEEN 0 AND 120
 
 ---- final check: error table should be empty ----
 SELECT COUNT(*) FROM error_checking.silver.yellow_errors;
+
+
+-- -- view error rows:
+-- SELECT
+--     silver.*
+-- FROM nyc_taxi.silver.yellow AS silver
+-- INNER JOIN error_checking.silver.yellow_errors AS errors
+--     ON silver.id = errors.row_id; 
+
 
