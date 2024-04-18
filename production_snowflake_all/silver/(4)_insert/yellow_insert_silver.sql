@@ -1,4 +1,4 @@
-INSERT INTO silver_layer.test.yellow 
+INSERT INTO nyc_taxi.silver.yellow
 (
     dolocationid,
     pulocationid,
@@ -98,7 +98,7 @@ SELECT
         WHEN ABS(airport_fee) IN (0, 1.25) THEN ABS(airport_fee)
         ELSE NULL END AS 
     airport_fee
-FROM bronze_layer.flattened.yellow_flat
+FROM nyc_taxi.senior_bronze.yellow
 )  
 SELECT
     *,
@@ -115,5 +115,6 @@ SELECT
     trip_duration_minutes
     -- trips limited to 5hrs (300 mins) max (justification: trips of 200 miles with time 280 mins exist, so we limit to 300 minutes)
 FROM silver_cte;
+
 
 

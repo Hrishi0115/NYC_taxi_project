@@ -29,9 +29,9 @@ FROM @nyc_taxi.bronze.all_green_azure_stage
 file_format = nyc_taxi.bronze.parquet_taxis_green
 pattern = '.*green_tripdata_2018.*';
 
--- -- inspect inserted data
-SELECT COUNT(*) FROM nyc_taxi.bronze.green;
-SELECT COUNT($1)
-FROM @nyc_taxi.bronze.all_green_azure_stage
-(file_format => nyc_taxi.bronze.parquet_taxis_green, pattern => '.*green_tripdata_2018.*');
+-- -- -- inspect inserted data
+-- SELECT COUNT(*) FROM nyc_taxi.bronze.green;
+-- SELECT COUNT($1)
+-- FROM @nyc_taxi.bronze.all_green_azure_stage
+-- (file_format => nyc_taxi.bronze.parquet_taxis_green, pattern => '.*green_tripdata_2018.*');
 -- SELECT * FROM bronze_layer.json.green_from_2018_in LIMIT 5;

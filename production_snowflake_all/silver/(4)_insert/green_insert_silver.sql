@@ -1,5 +1,5 @@
 
-INSERT INTO silver_layer.test.green 
+INSERT INTO nyc_taxi.silver.green
 (
     dolocationid,
     pulocationid,
@@ -94,7 +94,7 @@ SELECT
         WHEN trip_type = 2 THEN 'Dispatch'
         ELSE 'Unknown' END AS
     trip_type
-    FROM bronze_layer.flattened.green_flat
+    FROM nyc_taxi.senior_bronze.green
 )
 SELECT
 *, 

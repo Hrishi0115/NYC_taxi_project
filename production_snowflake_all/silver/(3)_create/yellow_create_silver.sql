@@ -1,8 +1,8 @@
 
-DROP TABLE IF EXISTS silver_layer.test.yellow;
+DROP TABLE IF EXISTS nyc_taxi.silver.yellow;
 
 
-CREATE OR REPLACE TABLE silver_layer.test.yellow 
+CREATE OR REPLACE TABLE nyc_taxi.silver.yellow
 (
     id INT AUTOINCREMENT PRIMARY KEY,
     dolocationid INT,
