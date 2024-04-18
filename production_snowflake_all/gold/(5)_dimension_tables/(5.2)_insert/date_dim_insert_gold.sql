@@ -24,4 +24,5 @@ SET is_holiday = -- ONLY INCLUDES HOLIDAYS UP TO 2024
     ) THEN 1
     ELSE 0
     END;
+
  
