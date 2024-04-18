@@ -1,6 +1,6 @@
 -- FHV HV INSERT INTO SILVER
 
-INSERT INTO silver.fhvhv(hvfhs_license_number,
+INSERT INTO nyc_taxi.silver.fhvhv(hvfhs_license_number,
   dispatching_base_number,
   originating_base_number,
   pickup_date,
@@ -65,5 +65,5 @@ SELECT
     ELSE upper(wav_request_flag) END AS wav_request_flag,
     CASE WHEN upper(wav_match_flag) NOT IN ('Y','N') THEN 'U'
     ELSE upper(wav_match_flag) END AS wav_match_flag
-FROM senior_bronze.fhvhv
+FROM nyc_taxi.senior_bronze.fhvhv
 ;

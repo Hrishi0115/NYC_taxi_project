@@ -2,7 +2,7 @@
 USE ROLE accountadmin;
 USE DATABASE nyc_taxi;
 USE SCHEMA bronze;
-use warehouse cecily_l;
+use warehouse cecily_xs;
 
 -- azure stage for triathlon azure blob using SAS token
 CREATE OR REPLACE STAGE bronze.fhv_stage

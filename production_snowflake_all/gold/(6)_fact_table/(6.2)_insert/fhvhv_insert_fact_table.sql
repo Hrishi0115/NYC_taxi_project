@@ -1,6 +1,6 @@
 -- FHV HV INSERT INTO GOLD
 
-INSERT INTO gold_level.public.fhv_trip_fact_table(
+INSERT INTO nyc_taxi.gold.fact_fhv_trip(
     HVFHS_LICENSE_NUMBER,
     DISPATCHING_BASE_NUMBER,
 	ORIGINATING_BASE_NUMBER,
@@ -66,21 +66,21 @@ SELECT
     access_a_ride_flag,
 	wav_request_flag,
 	wav_match_flag
-FROM silver_layer.test.fhvhv AS silver
-LEFT JOIN gold_level.public.date_dim AS pickup_date
+FROM silver.fhvhv AS silver
+LEFT JOIN gold.date_dim AS pickup_date
     ON silver.pickup_date = pickup_date.date
-LEFT JOIN gold_level.public.date_dim AS dropoff_date
+LEFT JOIN gold.date_dim AS dropoff_date
     ON silver.dropoff_date = dropoff_date.date
-LEFT JOIN gold_level.public.date_dim AS request_date
+LEFT JOIN gold.date_dim AS request_date
     ON silver.request_date = request_date.date
-LEFT JOIN gold_level.public.date_dim AS onscene_date
+LEFT JOIN gold.date_dim AS onscene_date
     ON silver.on_scene_date = onscene_date.date
-LEFT JOIN gold_level.public.time_dim AS pickup_time
+LEFT JOIN gold.time_dim AS pickup_time
     ON silver.pickup_time = pickup_time.time
-LEFT JOIN gold_level.public.time_dim AS dropoff_time
+LEFT JOIN gold.time_dim AS dropoff_time
     ON silver.dropoff_time = dropoff_time.time
-LEFT JOIN gold_level.public.time_dim AS request_time
+LEFT JOIN gold.time_dim AS request_time
     ON silver.request_time = request_time.time
-LEFT JOIN gold_level.public.time_dim AS onscene_time
+LEFT JOIN gold.time_dim AS onscene_time
     ON silver.on_scene_time = onscene_time.time
 ;

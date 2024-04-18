@@ -1,6 +1,6 @@
 -- FHV HV CREATE BRONZE FLATTENED TABLE AS
 
-CREATE OR REPLACE TABLE senior_bronze.fhvhv AS 
+CREATE OR REPLACE TABLE nyc_taxi.senior_bronze.fhvhv AS 
 SELECT
     $1:hvfhs_license_num::STRING AS hvfhs_license_num,
     $1:dispatching_base_num::STRING AS dispatching_base_num,
@@ -26,5 +26,5 @@ SELECT
     $1:access_a_ride_flag::STRING AS access_a_ride_flag, 
     $1:wav_request_flag::STRING AS wav_request_flag,
     $1:wav_match_flag::STRING AS wav_match_flag
-FROM bronze.fhvhv
+FROM nyc_taxi.bronze.fhvhv
 ;
