@@ -32,12 +32,66 @@ WHERE vendor_id NOT IN (1,2,3)
    OR vendor_id IS NULL;
 
 
+-- 3. passenger_count column
+-- should be between 0 and 6, or null
+INSERT INTO error_checking.gold.yellow_errors
+SELECT
+    taxi_trip_id,
+    'invalid passenger_count'
+FROM nyc_taxi.gold.fact_taxi_trip
+WHERE passenger_count NOT IN (0,1,2,3,4,5,6)
+   AND passenger_count IS NOT NULL;
 
+
+-- 4. trip_distance column
+-- Should be between 0-200, or nulls
+INSERT INTO error_checking.gold.yellow_errors
+SELECT
+    taxi_trip_id,
+    'invalid trip_distance'
+FROM nyc_taxi.gold.fact_taxi_trip
+WHERE trip_distance NOT BETWEEN 0 AND 200
+   AND trip_distance IS NOT NULL;
+
+
+-- 5. pu_zone_id column
+-- should be between 1-265, no nulls
+INSERT INTO error_checking.gold.yellow_errors
+SELECT
+    taxi_trip_id,
+    'invalid pu_zone_id'
+FROM nyc_taxi.gold.fact_taxi_trip
+WHERE pu_zone_id NOT BETWEEN 1 AND 265
+   OR pu_zone_id IS NULL;
+
+
+-- 6. do_zone_id column
+-- should be between 1-265, no nulls
+INSERT INTO error_checking.gold.yellow_errors
+SELECT
+    taxi_trip_id,
+    'invalid do_zone_id column'
+FROM nyc_taxi.gold.fact_taxi_trip
+WHERE pu_zone_id NOT BETWEEN 1 AND 265
+   OR pu_zone_id IS NULL;
+
+
+
+
+
+------ checking results of tests
 -- error table overview after all tests:
 SELECT COUNT(*) FROM error_checking.gold.yellow_errors;
 
 
--- -- view error rows:
+-- -- see which columns have rows with errors:
+-- SELECT message, COUNT(*) 
+-- FROM error_checking.gold.yellow_errors
+-- GROUP BY message
+-- ORDER BY COUNT(*) DESC;
+
+
+-- -- view the actual rows with errors in original table:
 -- SELECT
 --     gold.*
 -- FROM nyc_taxi.gold.fact_taxi_trip AS gold

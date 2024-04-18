@@ -200,7 +200,6 @@ WHERE (tpep_pickup_time NOT BETWEEN TIME('00:00:00') AND TIME('23:59:59'))
 
 -- 18. trip_distance column
 -- Should be between 0-200, or nulls
-
 INSERT INTO error_checking.silver.yellow_errors
 SELECT
     id,
@@ -244,13 +243,14 @@ WHERE congestion_surcharge BETWEEN 0 AND 120
 ---- final check: error table count should be empty ----
 SELECT COUNT(*) FROM error_checking.silver.yellow_errors;
 
--- -- see which columns have errors:
-SELECT message, COUNT(*) 
-FROM error_checking.silver.yellow_errors
-GROUP BY message;
+-- -- see which columns have rows with errors:
+-- SELECT message, COUNT(*) 
+-- FROM error_checking.silver.yellow_errors
+-- GROUP BY message
+-- ORDER BY COUNT(*) DESC;
 
 
--- -- view error rows:
+-- -- view the actual rows with errors in original table:
 -- SELECT
 --     silver.*
 -- FROM nyc_taxi.silver.yellow AS silver
