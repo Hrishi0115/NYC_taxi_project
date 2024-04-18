@@ -1,0 +1,11 @@
+-- table to clone
+SELECT COUNT(*) 
+FROM nyc_taxi.GOLD.FACT_TAXI_TRIP; -- 110568004
+
+-- clone
+CREATE TABLE clone.gold.FACT_TAXI_TRIP2018 CLONE nyc_taxi.GOLD.FACT_TAXI_TRIP;
+
+-- check clone
+SELECT COUNT(*) 
+FROM clone.gold.FACT_TAXI_TRIP2018 -- 110568004
+;
