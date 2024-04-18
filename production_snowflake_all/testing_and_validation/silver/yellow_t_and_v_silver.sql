@@ -55,7 +55,7 @@ WHERE ratecodeid NOT IN (1,2,3,4,5,6,7)
 INSERT INTO error_checking.silver.yellow_errors
 SELECT
     id,
-    'invalid ratecodeid'
+    'invalid vendorid'
 FROM silver_layer.test.yellow
 WHERE vendorid NOT IN (1,2,3)
    OR vendorid IS NULL;
@@ -66,7 +66,7 @@ WHERE vendorid NOT IN (1,2,3)
 INSERT INTO error_checking.silver.yellow_errors
 SELECT
     id,
-    'invalid ratecodeid'
+    'invalid extra'
 FROM silver_layer.test.yellow
 WHERE extra NOT IN (0, 0.5, 1, 2.75, 4.5)
    AND extra IS NOT NULL;
@@ -77,7 +77,7 @@ WHERE extra NOT IN (0, 0.5, 1, 2.75, 4.5)
 INSERT INTO error_checking.silver.yellow_errors
 SELECT
     id,
-    'invalid ratecodeid'
+    'invalid fare_amount'
 FROM silver_layer.test.yellow
 WHERE fare_amount NOT BETWEEN 0 AND 500
    AND fare_amount IS NOT NULL;
@@ -88,7 +88,7 @@ WHERE fare_amount NOT BETWEEN 0 AND 500
 INSERT INTO error_checking.silver.yellow_errors
 SELECT
     id,
-    'invalid ratecodeid'
+    'invalid improvement_surcharge'
 FROM silver_layer.test.yellow
 WHERE improvement_surcharge NOT IN (0, 0.3)
    AND improvement_surcharge IS NOT NULL;
@@ -99,7 +99,7 @@ WHERE improvement_surcharge NOT IN (0, 0.3)
 INSERT INTO error_checking.silver.yellow_errors
 SELECT
     id,
-    'invalid ratecodeid'
+    'invalid mta_tax'
 FROM silver_layer.test.yellow
 WHERE mta_tax NOT IN (0, 0.5)
    AND mta_tax IS NOT NULL;
@@ -110,7 +110,7 @@ WHERE mta_tax NOT IN (0, 0.5)
 INSERT INTO error_checking.silver.yellow_errors
 SELECT
     id,
-    'invalid ratecodeid'
+    'invalid passenger_count'
 FROM silver_layer.test.yellow
 WHERE passenger_count NOT IN (0,1,2,3,4,5,6)
    AND passenger_count IS NOT NULL;
@@ -121,47 +121,47 @@ WHERE passenger_count NOT IN (0,1,2,3,4,5,6)
 INSERT INTO error_checking.silver.yellow_errors
 SELECT
     id,
-    'invalid ratecodeid'
+    'invalid payment_type'
 FROM silver_layer.test.yellow
 WHERE payment_type NOT IN (1,2,3,4,5,6)
-   AND payment_type IS NULL;
+   OR payment_type IS NULL;
 
 
 -- 11. store_and_fwd_flag column
--- should be between 1 and 6, no nulls
+-- should be in (Y,N,U), no nulls
 INSERT INTO error_checking.silver.yellow_errors
 SELECT
     id,
-    'invalid ratecodeid'
+    'store_and_fwd_flag'
 FROM silver_layer.test.yellow
 WHERE store_and_fwd_flag NOT IN ('Y', 'N', 'U')
-   AND store_and_fwd_flag IS NULL;
+   OR store_and_fwd_flag IS NULL;
 
 
 -- 12. tip_amount column
--- should not be a negative number
+-- should not be a negative number, nulls allowed
 INSERT INTO error_checking.silver.yellow_errors
 SELECT
     id,
-    'invalid ratecodeid'
+    'invalid tip_amount'
 FROM silver_layer.test.yellow
 WHERE tip_amount < 0
-   AND tip_amount IS NOT NULL;
+    AND tip_amount IS NOT NULL;
 
 
 -- 13. tolls_amount column
--- should not be a negative number
+-- should not be a negative number,  nulls allowed
 INSERT INTO error_checking.silver.yellow_errors
 SELECT
     id,
-    'invalid ratecodeid'
+    'invalid tolls_amount'
 FROM silver_layer.test.yellow
-WHERE tip_amount < 0
-   AND tip_amount IS NOT NULL;
+WHERE tolls_amount NOT BETWEEN 0 AND 120
+    AND tolls_amount IS NOT NULL;
 
 
 
----- error table should be empty ----
+---- final check: error table should be empty ----
 SELECT COUNT(*) FROM error_checking.silver.yellow_errors;
 
 
