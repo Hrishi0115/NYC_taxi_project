@@ -1,8 +1,8 @@
 
-DROP TABLE IF EXISTS gold_level.public.trip_fact_table;
+DROP TABLE IF EXISTS nyc_taxi.gold.fact_taxi_trip;
 
 -- create fact table for yellow and green taxis
-CREATE OR REPLACE TABLE gold_level.public.trip_fact_table
+CREATE OR REPLACE TABLE nyc_taxi.gold.fact_taxi_trip
 (
 taxi_trip_id INT PRIMARY KEY AUTOINCREMENT --START 1 INCREMENT 1
 ,taxi_colour_id INT

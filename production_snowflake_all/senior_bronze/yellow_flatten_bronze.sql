@@ -1,11 +1,6 @@
--- Setup
-USE WAREHOUSE compute_wh;
-USE DATABASE bronze_layer;
-USE SCHEMA flattened;
-
 
 -- create flat yellow taxi table in bronze layer
-CREATE OR REPLACE TABLE bronze_layer.flattened.yellow_flat AS 
+CREATE OR REPLACE TABLE nyc_taxi.senior_bronze.yellow AS 
 SELECT
     $1:DOLocationID::int as DOLocationID,
     $1:PULocationID::int as PULocationID,
@@ -26,10 +21,9 @@ SELECT
     $1:trip_distance::float as trip_distance,
     $1:congestion_surchage::float as congestion_surcharge,
     $1:airport_fee::float as airport_fee,
-FROM adf_layer.adf_landing.yellow_in
+FROM nyc_taxi.bronze.yellow
 ;
 
 
---SELECT COUNT(*) FROM adf_test.adf_flattening.adf_yellow_flat;
---SHOW COLUMNS IN adf_yellow_flat;
+--SELECT COUNT(*) FROM nyc_taxi.senior_bronze.yellow;
 

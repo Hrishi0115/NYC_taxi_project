@@ -1,7 +1,7 @@
 
-DROP TABLE IF EXISTS silver_layer.test.green;
+DROP TABLE IF EXISTS nyc_taxi.silver.green;
 
-CREATE OR REPLACE TABLE silver_layer.test.green
+CREATE OR REPLACE TABLE nyc_taxi.silver.green
 (
     id INT AUTOINCREMENT PRIMARY KEY,
     dolocationid INT,
@@ -26,3 +26,5 @@ CREATE OR REPLACE TABLE silver_layer.test.green
     total_amount DECIMAL(10,2),
     trip_duration_minutes DECIMAL(10,1)
 );
+
+
