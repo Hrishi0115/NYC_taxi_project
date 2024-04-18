@@ -1,6 +1,6 @@
 -- FHV INSERT INTO SILVER
 
-INSERT INTO silver_layer.test.fhv (dispatching_base_number,
+INSERT INTO silver.fhv (dispatching_base_number,
     dropoff_date,
     dropoff_time,
     pickup_date,
@@ -8,7 +8,7 @@ INSERT INTO silver_layer.test.fhv (dispatching_base_number,
     DOlocationID,
     PUlocationID,
     sr_flag,
-    trip_duration_minutes)
+    trip_time)
 SELECT
     upper(DISPATCHING_BASE_NUM),
     CASE WHEN year(to_date(dropoff_datetime)) BETWEEN 2018 AND 2024 THEN to_date(dropoff_datetime)
@@ -23,6 +23,6 @@ SELECT
     CASE WHEN TIMEDIFF(second, to_time(pickup_datetime), to_time(dropoff_datetime)) / 60 < 0 AND ROUND((TIMEDIFF(second, to_time(pickup_datetime), to_time(dropoff_datetime)) / 60) + 1440 , 1) > 480 THEN NULL
         WHEN TIMEDIFF(second, to_time(pickup_datetime), to_time(dropoff_datetime)) / 60 < 0 THEN ROUND((TIMEDIFF(second, to_time(pickup_datetime), to_time(dropoff_datetime)) / 60) + 1440 , 1)
         WHEN TIMEDIFF(second, to_time(pickup_datetime), to_time(dropoff_datetime)) / 60 > 480 THEN NULL
-        ELSE ROUND((TIMEDIFF(second, to_time(pickup_datetime), to_time(dropoff_datetime)) / 60), 1) END AS trip_duration_minutes
-FROM bronze_layer.flattened.fhv_flat
+        ELSE ROUND((TIMEDIFF(second, to_time(pickup_datetime), to_time(dropoff_datetime)) / 60), 1) END AS trip_time
+FROM senior_bronze.fhv
 ;

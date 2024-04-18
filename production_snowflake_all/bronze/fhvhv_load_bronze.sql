@@ -1,7 +1,7 @@
 -- setup
 USE ROLE accountadmin;
-USE DATABASE bronze_layer;
-USE SCHEMA json;
+USE DATABASE nyc_taxi;
+USE SCHEMA bronze;
 
 -- azure stage for triathlon azure blob using SAS token
 CREATE OR REPLACE STAGE all_fhvhv_azure_stage

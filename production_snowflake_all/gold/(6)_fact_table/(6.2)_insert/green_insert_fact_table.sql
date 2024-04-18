@@ -1,6 +1,6 @@
 
 --Insert all green data into fact table. 
-INSERT INTO gold_level.public.trip_fact_table
+INSERT INTO nyc_taxi.gold.fact_taxi_trip
 (
 taxi_colour_id
 ,vendor_id
@@ -45,17 +45,17 @@ SELECT
     ,silver.total_amount
     ,trip_type_dim.trip_type_id
     ,silver.trip_duration_minutes
-FROM silver_layer.test.green AS silver
-LEFT JOIN gold_level.public.date_dim AS pickup_date
+FROM nyc_taxi.silver.green AS silver
+LEFT JOIN nyc_taxi.gold.date_dim AS pickup_date
     ON silver.lpep_pickup_date = pickup_date.date
-LEFT JOIN gold_level.public.date_dim AS dropoff_date
+LEFT JOIN nyc_taxi.gold.date_dim AS dropoff_date
     ON silver.lpep_dropoff_date = dropoff_date.date
-LEFT JOIN gold_level.public.time_dim AS pickup_time
+LEFT JOIN nyc_taxi.gold.time_dim AS pickup_time
     ON silver.lpep_pickup_time = pickup_time.time
-LEFT JOIN gold_level.public.time_dim AS dropoff_time
+LEFT JOIN nyc_taxi.gold.time_dim AS dropoff_time
     ON silver.lpep_dropoff_time = dropoff_time.time
-LEFT JOIN gold_level.public.trip_type_dim AS trip_type_dim
+LEFT JOIN nyc_taxi.gold.trip_type_dim AS trip_type_dim
     ON UPPER(silver.trip_type) = UPPER(trip_type_dim.trip_type)
-LEFT JOIN gold_level.public.taxi_colour_dim AS taxi_colour_dim
+LEFT JOIN nyc_taxi.gold.taxi_colour_dim AS taxi_colour_dim
     ON LOWER(taxi_colour_dim.taxi_colour) = 'green'
 ;

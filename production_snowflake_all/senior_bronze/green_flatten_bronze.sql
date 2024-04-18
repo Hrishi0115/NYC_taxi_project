@@ -1,6 +1,6 @@
 -- GREEN CREATE BRONZE FLATTENED TABLE
 
-CREATE OR REPLACE TABLE bronze_layer.flattened.green_flat AS
+CREATE OR REPLACE TABLE nyc_taxi.senior_bronze.green AS
 SELECT
   $1:DOLocationID::int as DOLocationID,
   $1:PULocationID::int as PULocationID,
@@ -20,5 +20,5 @@ SELECT
   $1:total_amount::float as total_amount,
   $1:trip_distance::float as trip_distance,
   $1:trip_type::int as trip_type
-FROM bronze_layer.json.green_from_2018_in
+FROM nyc_taxi.bronze.green
 ;

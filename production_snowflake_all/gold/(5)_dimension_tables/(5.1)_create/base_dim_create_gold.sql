@@ -1,3 +1,6 @@
+use database nyc_taxi;
+use schema gold;
+
 create or replace table base_dim
 (
 hv_license_number VARCHAR(15)
@@ -16,6 +19,7 @@ create or replace FILE FORMAT csv_zone
 TYPE = csv
 FIELD_OPTIONALLY_ENCLOSED_BY = '"';
  
+-- check insert
 -- SELECT $1,$2,$3,$4
 -- from @base_stage
 -- (file_format => csv_zone)

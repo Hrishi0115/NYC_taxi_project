@@ -1,3 +1,6 @@
+use database nyc_taxi;
+use schema gold;
+
 create or replace table time_dim AS
  
 WITH my_cte AS (

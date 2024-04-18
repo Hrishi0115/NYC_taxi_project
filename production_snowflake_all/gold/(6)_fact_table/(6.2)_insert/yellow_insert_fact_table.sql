@@ -1,6 +1,6 @@
 
 -- Insert all yellow data (check no limit at end of statement)
-INSERT INTO gold_level.public.trip_fact_table
+INSERT INTO nyc_taxi.gold.fact_taxi_trip
 (
 taxi_colour_id
 ,vendor_id
@@ -48,18 +48,18 @@ SELECT
     ,silver.airport_fee
     ,silver.congestion_surcharge
     ,silver.trip_duration_minutes
-FROM silver_layer.test.yellow AS silver
-LEFT JOIN gold_level.public.date_dim AS pickup_date
+FROM nyc_taxi.silver.yellow AS silver
+LEFT JOIN nyc_taxi.gold.date_dim AS pickup_date
     ON silver.tpep_pickup_date = pickup_date.date 
-LEFT JOIN gold_level.public.date_dim AS dropoff_date
+LEFT JOIN nyc_taxi.gold.date_dim AS dropoff_date
     ON silver.tpep_dropoff_date = dropoff_date.date
-LEFT JOIN gold_level.public.time_dim AS pickup_time
+LEFT JOIN nyc_taxi.gold.time_dim AS pickup_time
     ON silver.tpep_pickup_time = pickup_time.time
-LEFT JOIN gold_level.public.time_dim AS dropoff_time
+LEFT JOIN nyc_taxi.gold.time_dim AS dropoff_time
     ON silver.tpep_dropoff_time = dropoff_time.time
-LEFT JOIN gold_level.public.taxi_colour_dim AS taxi_colour_dim
+LEFT JOIN nyc_taxi.gold.taxi_colour_dim AS taxi_colour_dim
     ON LOWER(taxi_colour_dim.taxi_colour) = 'yellow'
-LEFT JOIN gold_level.public.trip_type_dim AS trip_type_dim
+LEFT JOIN nyc_taxi.gold.trip_type_dim AS trip_type_dim
     ON LOWER(trip_type_dim.trip_type) = 'street-hail'
 -- LIMIT 5
 ;
