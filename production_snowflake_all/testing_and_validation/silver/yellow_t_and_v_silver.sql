@@ -250,4 +250,3 @@ SELECT COUNT(*) FROM error_checking.silver.yellow_errors;
 -- INNER JOIN error_checking.silver.yellow_errors AS errors
 --     ON silver.id = errors.row_id; 
 
-
