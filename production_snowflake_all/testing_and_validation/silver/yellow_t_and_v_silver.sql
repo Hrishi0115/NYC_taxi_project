@@ -245,9 +245,9 @@ WHERE congestion_surcharge BETWEEN 0 AND 120
 SELECT COUNT(*) FROM error_checking.silver.yellow_errors;
 
 -- -- see which columns have errors:
--- SELECT message, COUNT(*) 
--- FROM error_checking.silver.yellow_errors
--- GROUP BY message;
+SELECT message, COUNT(*) 
+FROM error_checking.silver.yellow_errors
+GROUP BY message;
 
 
 -- -- view error rows:

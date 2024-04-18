@@ -98,4 +98,3 @@ WHERE pickup_time IS NULL;
 ---- error table should be empty ----
 SELECT COUNT(*) FROM error_checking.silver.fhv_errors;
 
-
