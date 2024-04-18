@@ -133,8 +133,8 @@ GROUP BY year(pickup_date);
 
 
 
-
-SELECT * FROM gold_level.public.fhv_trip_fact_table;
+use warehouse cecily_xs;
+SELECT * FROM gold_level.public.fhv_trip_fact_table LIMIT 10;
 -- test cte
 
 WITH cte1 AS (
