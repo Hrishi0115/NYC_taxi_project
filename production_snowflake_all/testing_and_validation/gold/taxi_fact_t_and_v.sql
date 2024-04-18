@@ -2,8 +2,8 @@
 
 
 -- gold layer error table to log faulty values in taxi fact table
-DROP TABLE IF EXISTS error_checking.gold.yellow_errors;
-CREATE OR REPLACE TABLE error_checking.gold.yellow_errors
+DROP TABLE IF EXISTS error_checking.gold.taxi_fact_errors;
+CREATE OR REPLACE TABLE error_checking.gold.taxi_fact_errors
 (
     row_id INT, -- id of fact table row with bad data
     message STRING -- message will change depending on test
@@ -12,7 +12,7 @@ CREATE OR REPLACE TABLE error_checking.gold.yellow_errors
 
 -- 1. taxi_colour_id
 -- should be 1, 2 or null
-INSERT INTO error_checking.gold.yellow_errors
+INSERT INTO error_checking.gold.taxi_fact_errors
 SELECT
     taxi_trip_id,
     'taxi_colour_id'
@@ -23,7 +23,7 @@ WHERE taxi_colour_id NOT IN (1,2)
 
 -- 2. vendorid column
 -- should be between 1-3, no nulls
-INSERT INTO error_checking.gold.yellow_errors
+INSERT INTO error_checking.gold.taxi_fact_errors
 SELECT
     taxi_trip_id,
     'invalid vendor_id'
@@ -34,7 +34,7 @@ WHERE vendor_id NOT IN (1,2,3)
 
 -- 3. passenger_count column
 -- should be between 0 and 6, or null
-INSERT INTO error_checking.gold.yellow_errors
+INSERT INTO error_checking.gold.taxi_fact_errors
 SELECT
     taxi_trip_id,
     'invalid passenger_count'
@@ -45,7 +45,7 @@ WHERE passenger_count NOT IN (0,1,2,3,4,5,6)
 
 -- 4. trip_distance column
 -- Should be between 0-200, or nulls
-INSERT INTO error_checking.gold.yellow_errors
+INSERT INTO error_checking.gold.taxi_fact_errors
 SELECT
     taxi_trip_id,
     'invalid trip_distance'
@@ -56,7 +56,7 @@ WHERE trip_distance NOT BETWEEN 0 AND 200
 
 -- 5. pu_zone_id column
 -- should be between 1-265, no nulls
-INSERT INTO error_checking.gold.yellow_errors
+INSERT INTO error_checking.gold.taxi_fact_errors
 SELECT
     taxi_trip_id,
     'invalid pu_zone_id'
@@ -67,7 +67,7 @@ WHERE pu_zone_id NOT BETWEEN 1 AND 265
 
 -- 6. do_zone_id column
 -- should be between 1-265, no nulls
-INSERT INTO error_checking.gold.yellow_errors
+INSERT INTO error_checking.gold.taxi_fact_errors
 SELECT
     taxi_trip_id,
     'invalid do_zone_id column'
@@ -76,28 +76,52 @@ WHERE pu_zone_id NOT BETWEEN 1 AND 265
    OR pu_zone_id IS NULL;
 
 
+-- 7. pu_date_id column
+-- should be between 2018-2024, nulls allowed
+INSERT INTO error_checking.gold.taxi_fact_errors
+SELECT
+    fact.taxi_trip_id,
+    'pu_date_id'
+FROM nyc_taxi.gold.fact_taxi_trip AS fact
+INNER JOIN nyc_taxi.gold.date_dim AS dates
+WHERE YEAR(dates.date) NOT BETWEEN 2018 AND 2024
+    AND fact.taxi_trip_id IS NOT NULL;
 
 
 
------- checking results of tests
+
+
+
+
+------ checking results of tests ------
 -- error table overview after all tests:
-SELECT COUNT(*) FROM error_checking.gold.yellow_errors;
+SELECT COUNT(*) FROM error_checking.gold.taxi_fact_errors;
 
 
 -- -- see which columns have rows with errors:
 -- SELECT message, COUNT(*) 
--- FROM error_checking.gold.yellow_errors
+-- FROM error_checking.gold.taxi_fact_errors
 -- GROUP BY message
 -- ORDER BY COUNT(*) DESC;
 
-
--- -- view the actual rows with errors in original table:
+-- -- view the actual rows with errors in original table (dates included for full view):
 -- SELECT
---     gold.*
+--     gold.*,
+--     dates.date
 -- FROM nyc_taxi.gold.fact_taxi_trip AS gold
--- INNER JOIN error_checking.gold.yellow_errors AS errors
+-- LEFT JOIN nyc_taxi.gold.date_dim AS dates
+--     ON gold.pu_date_id = dates.date_id
+-- INNER JOIN error_checking.gold.taxi_fact_errors AS errors
 --     ON gold.taxi_trip_id = errors.row_id; 
 
+
+
+-- -- can drop all rows in fact table with rows that appear in error table to
+-- -- maintain integrity of fact table used for reporting
+-- DELETE FROM nyc_taxi.gold.fact_taxi_trip
+-- WHERE taxi_trip_id IN (
+--     SELECT row_id FROM error_checking.gold.taxi_fact_errors
+-- );
 
 
 
