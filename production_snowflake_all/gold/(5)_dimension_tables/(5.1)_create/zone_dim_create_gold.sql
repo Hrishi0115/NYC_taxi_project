@@ -1,3 +1,6 @@
+use database nyc_taxi;
+use schema gold;
+
 create or replace stage zone_stage
 url = 'azure://triathlonnyc.blob.core.windows.net/output/taxi_zone_lookup'
 credentials = (AZURE_SAS_TOKEN = 'sp=rl&st=2024-04-10T13:48:21Z&se=2024-04-19T21:48:21Z&spr=https&sv=2022-11-02&sr=c&sig=gnfFLDUs19AGWxqa10Hp%2BQctVrHQe6I6DC2s2qhWOns%3D')

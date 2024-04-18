@@ -1,6 +1,8 @@
 -- CREATE SILVER FHV TABLE
 
-CREATE OR REPLACE TABLE silver_layer.test.fhv (
+use database nyc_taxi;
+use schema silver;
+CREATE OR REPLACE TABLE silver.fhv(
   id INT AUTOINCREMENT PRIMARY KEY,
   dispatching_base_number string,
   dropoff_date date,
@@ -9,5 +11,6 @@ CREATE OR REPLACE TABLE silver_layer.test.fhv (
   pickup_time time,
   DOlocationID int,
   PUlocationID int,
-  sr_flag int
+  sr_flag int,
+  trip_time int
 );

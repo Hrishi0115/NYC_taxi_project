@@ -1,6 +1,6 @@
 -- FHV INSERT INTO GOLD
 
-INSERT INTO GOLD_LEVEL.PUBLIC.FHV_TRIP_FACT_TABLE (
+INSERT INTO gold.fact_fhv_trip (
 	DISPATCHING_BASE_NUMBER,
 	ORIGINATING_BASE_NUMBER,
 	PU_DATE_ID,
@@ -27,13 +27,16 @@ SELECT
         WHEN TIMEDIFF(second, pickup_time, dropoff_time) / 60 < 0 THEN ROUND((TIMEDIFF(second, pickup_time, dropoff_time) / 60) + 1440 , 1)
         WHEN TIMEDIFF(second, pickup_time, dropoff_time) / 60 > 480 THEN NULL
         ELSE ROUND((TIMEDIFF(second, pickup_time, dropoff_time) / 60), 1) END AS trip_time
-FROM silver_layer.test.fhv AS silver
-LEFT JOIN gold_level.public.date_dim AS pickup_date
+FROM silver.fhv AS silver
+LEFT JOIN gold.date_dim AS pickup_date
     ON silver.pickup_date = pickup_date.date
-LEFT JOIN gold_level.public.date_dim AS dropoff_date
+LEFT JOIN gold.date_dim AS dropoff_date
     ON silver.dropoff_date = dropoff_date.date
-LEFT JOIN gold_level.public.time_dim AS pickup_time
+LEFT JOIN gold.time_dim AS pickup_time
     ON silver.pickup_time = pickup_time.time
-LEFT JOIN gold_level.public.time_dim AS dropoff_time
+LEFT JOIN gold.time_dim AS dropoff_time
     ON silver.dropoff_time = dropoff_time.time
 ;
+
+use warehouse cecily_l;
+

@@ -1,13 +1,33 @@
 -- FHV HV INSERT INTO SILVER
 
-INSERT INTO silver_layer.test.fhvhv(hvfhs_license_number,
-  dispatching_base_number,originating_base_number,pickup_date,pickup_time,
-  dropoff_date,dropoff_time,PUlocationID,DOlocationID,request_date,
-  request_time,on_scene_date,on_scene_time,trip_miles,trip_time,base_passenger_fare,
-  tolls,black_car_fund,sales_tax,congestion_surcharge,
-  airport_fee,tips,driver_pay,shared_request_flag,
-  shared_match_flag,access_a_ride_flag,wav_request_flag,wav_match_flag
-  )
+INSERT INTO silver.fhvhv(hvfhs_license_number,
+  dispatching_base_number,
+  originating_base_number,
+  pickup_date,
+  pickup_time,
+  dropoff_date,
+  dropoff_time,
+  PUlocationID,
+  DOlocationID,
+  request_date,
+  request_time,
+  on_scene_date,
+  on_scene_time,
+  trip_miles,
+  trip_time,
+  base_passenger_fare,
+  tolls,
+  black_car_fund,
+  sales_tax,
+  congestion_surcharge,
+  airport_fee,
+  tips,
+  driver_pay,
+  shared_request_flag,
+  shared_match_flag,
+  access_a_ride_flag,
+  wav_request_flag,
+  wav_match_flag)
 
 SELECT
     upper(hvfhs_license_num),
@@ -45,5 +65,5 @@ SELECT
     ELSE upper(wav_request_flag) END AS wav_request_flag,
     CASE WHEN upper(wav_match_flag) NOT IN ('Y','N') THEN 'U'
     ELSE upper(wav_match_flag) END AS wav_match_flag
-FROM bronze_layer.flattened.fhvhv_flat
+FROM senior_bronze.fhvhv
 ;
