@@ -8,8 +8,10 @@ SELECT COUNT(*)
 FROM GOLD.FACT_FHV_TRIP
 WHERE hvfhs_license_number IS NULL; -- 260,874,753
 
+SELECT COUNT(*)
+FROM GOLD.FACT_FHV_TRIP; -- 260,874,753
 -- fhv hv
-SELECT COUNT(*) FROM silver_layer.test.fhvhv; -- 60,000,305
+SELECT COUNT(*) FROM silver.fhvhv; -- 60,000,305
 SELECT COUNT(*) 
 FROM GOLD.FACT_FHV_TRIP
 WHERE hvfhs_license_number IS NOT NULL; -- 60,000,305
