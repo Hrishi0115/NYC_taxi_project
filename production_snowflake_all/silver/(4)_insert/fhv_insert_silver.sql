@@ -1,6 +1,6 @@
 -- FHV INSERT INTO SILVER
 
-INSERT INTO silver.fhv (dispatching_base_number,
+INSERT INTO nyc_taxi.silver.fhv (dispatching_base_number,
     dropoff_date,
     dropoff_time,
     pickup_date,
@@ -24,5 +24,5 @@ SELECT
         WHEN TIMEDIFF(second, to_time(pickup_datetime), to_time(dropoff_datetime)) / 60 < 0 THEN ROUND((TIMEDIFF(second, to_time(pickup_datetime), to_time(dropoff_datetime)) / 60) + 1440 , 1)
         WHEN TIMEDIFF(second, to_time(pickup_datetime), to_time(dropoff_datetime)) / 60 > 480 THEN NULL
         ELSE ROUND((TIMEDIFF(second, to_time(pickup_datetime), to_time(dropoff_datetime)) / 60), 1) END AS trip_time
-FROM senior_bronze.fhv
+FROM nyc_taxi.senior_bronze.fhv
 ;

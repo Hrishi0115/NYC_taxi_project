@@ -1,6 +1,6 @@
 -- FHV INSERT INTO GOLD
 
-INSERT INTO gold.fact_fhv_trip (
+INSERT INTO nyc_taxi.gold.fact_fhv_trip (
 	DISPATCHING_BASE_NUMBER,
 	ORIGINATING_BASE_NUMBER,
 	PU_DATE_ID,

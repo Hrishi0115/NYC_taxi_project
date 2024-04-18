@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS gold.fact_fhv_trip;
 
 -- create fhv and fhvhv fact table
 
-create or replace TABLE gold.fact_fhv_trip (
+create or replace TABLE nyc_taxi.gold.fact_fhv_trip (
     FHV_TRIP_ID NUMBER(38,0) NOT NULL autoincrement start 1 increment 1 noorder,
     HVFHS_LICENSE_NUMBER VARCHAR(15),
     DISPATCHING_BASE_NUMBER VARCHAR(15),
