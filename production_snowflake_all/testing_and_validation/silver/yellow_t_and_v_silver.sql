@@ -227,7 +227,7 @@ SELECT
     'invalid airport_fee'
 FROM nyc_taxi.silver.yellow
 WHERE airport_fee NOT IN (0,1.25)
-   OR airport_fee IS NULL;
+   OR airport_fee IS NOT NULL;
 
 -- 21. congestion_surcharge column
 -- should in (0-120), or nulls.
