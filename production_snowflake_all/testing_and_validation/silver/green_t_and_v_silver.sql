@@ -152,3 +152,36 @@ WHERE payment_type NOT IN (1, 2, 3, 4, 5, 6)
 --Error table should be empty.
 SELECT COUNT(*) FROM error_checking.silver.green_errors;
 
+-- 11. store_and_fwd_flag column
+-- should be in (Y,N,U), no nulls
+INSERT INTO error_checking.silver.green_errors
+SELECT
+    id,
+    'store_and_fwd_flag'
+FROM silver_layer.test.green
+WHERE store_and_fwd_flag NOT IN ('Y', 'N', 'U')
+   OR store_and_fwd_flag IS NULL;
+ 
+ 
+-- 12. tip_amount column
+-- should not be a negative number, nulls allowed
+INSERT INTO error_checking.silver.green_errors
+SELECT
+    id,
+    'invalid tip_amount'
+FROM silver_layer.test.green
+WHERE tip_amount < 0
+    AND tip_amount IS NOT NULL;
+ 
+ 
+-- 13. tolls_amount column
+-- should not be a negative number,  nulls allowed
+INSERT INTO error_checking.silver.green_errors
+SELECT
+    id,
+    'invalid tolls_amount'
+FROM silver_layer.test.green
+WHERE tolls_amount NOT BETWEEN 0 AND 120
+    AND tolls_amount IS NOT NULL;
+
+--14. 
