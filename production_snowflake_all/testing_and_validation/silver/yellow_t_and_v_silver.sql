@@ -239,8 +239,15 @@ FROM nyc_taxi.silver.yellow
 WHERE congestion_surcharge BETWEEN 0 AND 120
    AND congestion_surcharge IS NOT NULL;
 
----- final check: error table should be empty ----
+
+
+---- final check: error table count should be empty ----
 SELECT COUNT(*) FROM error_checking.silver.yellow_errors;
+
+-- -- see which columns have errors:
+-- SELECT message, COUNT(*) 
+-- FROM error_checking.silver.yellow_errors
+-- GROUP BY message;
 
 
 -- -- view error rows:
