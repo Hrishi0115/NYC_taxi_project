@@ -260,6 +260,7 @@ WHERE congestion_surcharge BETWEEN 0 AND 120
 
 
 ------ checking results of tests ------
+
 -- -- error table overview after all tests:
 SELECT COUNT(*) AS bad_rows_in_fact_table FROM error_checking.gold.taxi_fact_errors;
 
@@ -272,11 +273,13 @@ SELECT COUNT(*) AS bad_rows_in_fact_table FROM error_checking.gold.taxi_fact_err
 -- );
 
 
+
 -- -- see which columns have rows with errors:
 -- SELECT message, COUNT(*) 
 -- FROM error_checking.gold.taxi_fact_errors
 -- GROUP BY message
 -- ORDER BY COUNT(*) DESC;
+
 
 
 -- -- view the actual rows with errors in original table (dates included for full view):
@@ -288,6 +291,7 @@ SELECT COUNT(*) AS bad_rows_in_fact_table FROM error_checking.gold.taxi_fact_err
 --     ON gold.pu_date_id = dates.date_id
 -- INNER JOIN error_checking.gold.taxi_fact_errors AS errors
 --     ON gold.taxi_trip_id = errors.row_id; 
+
 
 
 
