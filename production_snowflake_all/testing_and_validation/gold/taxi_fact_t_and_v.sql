@@ -1,5 +1,6 @@
 
 
+-- see 
 
 -- gold layer error table to log faulty values in taxi fact table
 DROP TABLE IF EXISTS error_checking.gold.taxi_fact_errors;
@@ -84,11 +85,70 @@ SELECT
     'pu_date_id'
 FROM nyc_taxi.gold.fact_taxi_trip AS fact
 INNER JOIN nyc_taxi.gold.date_dim AS dates
+    ON fact.pu_date_id = dates.date_id
 WHERE YEAR(dates.date) NOT BETWEEN 2018 AND 2024
     AND fact.taxi_trip_id IS NOT NULL;
 
 
+-- 8. pu_time_id column
+-- should be between 2018-2024, nulls allowed
+INSERT INTO error_checking.gold.taxi_fact_errors
+SELECT
+    fact.taxi_trip_id,
+    'pu_time_id'
+FROM nyc_taxi.gold.fact_taxi_trip AS fact
+INNER JOIN nyc_taxi.gold.time_dim AS tim
+    ON fact.pu_time_id = tim.time_id
+WHERE tim.time NOT BETWEEN TIME('00:00:00') AND ('23:59:59')
+    AND fact.taxi_trip_id IS NOT NULL;
 
+
+-- 9. do_date_id column
+-- should be between 2018-2024, nulls allowed
+INSERT INTO error_checking.gold.taxi_fact_errors
+SELECT
+    fact.taxi_trip_id,
+    'do_date_id'
+FROM nyc_taxi.gold.fact_taxi_trip AS fact
+INNER JOIN nyc_taxi.gold.date_dim AS dates
+    ON fact.do_date_id = dates.date_id
+WHERE YEAR(dates.date) NOT BETWEEN 2018 AND 2024
+    AND fact.taxi_trip_id IS NOT NULL;
+
+
+-- 10. do_time_id column
+-- should be between 2018-2024, nulls allowed
+INSERT INTO error_checking.gold.taxi_fact_errors
+SELECT
+    fact.taxi_trip_id,
+    'do_time_id'
+FROM nyc_taxi.gold.fact_taxi_trip AS fact
+INNER JOIN nyc_taxi.gold.time_dim AS tim
+    ON fact.do_time_id = tim.time_id
+WHERE tim.time NOT BETWEEN TIME('00:00:00') AND ('23:59:59')
+    AND fact.taxi_trip_id IS NOT NULL;
+
+
+-- 11. ratecodeid column
+-- should be between 1-7, no nulls
+INSERT INTO error_checking.gold.taxi_fact_errors
+SELECT
+    taxi_trip_id,
+    'invalid ratecodeid'
+FROM nyc_taxi.gold.fact_taxi_trip
+WHERE rate_code_id NOT IN (1,2,3,4,5,6,7)
+   OR rate_code_id IS NULL;
+
+
+-- 12. payment_type_id column
+-- should be between 1 and 6, no nulls
+INSERT INTO error_checking.gold.taxi_fact_errors
+SELECT
+    taxi_trip_id,
+    'payment_type_id'
+FROM nyc_taxi.gold.fact_taxi_trip
+WHERE payment_type_id NOT IN (1,2,3,4,5,6)
+   OR payment_type_id IS NULL;
 
 
 
@@ -105,14 +165,14 @@ SELECT COUNT(*) FROM error_checking.gold.taxi_fact_errors;
 -- ORDER BY COUNT(*) DESC;
 
 -- -- view the actual rows with errors in original table (dates included for full view):
--- SELECT
---     gold.*,
---     dates.date
--- FROM nyc_taxi.gold.fact_taxi_trip AS gold
--- LEFT JOIN nyc_taxi.gold.date_dim AS dates
---     ON gold.pu_date_id = dates.date_id
--- INNER JOIN error_checking.gold.taxi_fact_errors AS errors
---     ON gold.taxi_trip_id = errors.row_id; 
+SELECT
+    gold.*,
+    YEAR(dates.date)
+FROM nyc_taxi.gold.fact_taxi_trip AS gold
+LEFT JOIN nyc_taxi.gold.date_dim AS dates
+    ON gold.pu_date_id = dates.date_id
+INNER JOIN error_checking.gold.taxi_fact_errors AS errors
+    ON gold.taxi_trip_id = errors.row_id; 
 
 
 
