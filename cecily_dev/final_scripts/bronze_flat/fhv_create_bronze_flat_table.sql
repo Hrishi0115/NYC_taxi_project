@@ -8,3 +8,7 @@ CREATE OR REPLACE TABLE fhv_pre2019_flat_data (
   PUlocationID int,
   SR_Flag int
 );
+
+
+use warehouse cecily_l;
+use database nyc_taxi;

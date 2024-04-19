@@ -22,95 +22,99 @@ WHERE hvfhs_license_number IS NOT NULL; -- 211,991,508
 
 -- sum over metrics to check gold vs gold joined w dimensions
 SELECT * FROM gold.base_dim LIMIT 5;
--- dimensions linked to fhv fact table
--- base_dim
--- zone dim
 
 -- base_dim
--- count rows
+
+-- join fact table to base_dim, count rows
 SELECT COUNT(*) 
-FROM GOLD.FACT_FHV_TRIP; --606,694,100
+FROM GOLD.FACT_FHV_TRIP; 
 SELECT COUNT(*)
 FROM GOLD.FACT_FHV_TRIP AS fact
 JOIN gold.base_dim AS dim
-ON dim.base_num = fact.dispatching_base_number; --551,031,560
+ON dim.base_num = fact.dispatching_base_number; 
 
--- there must be nulls
-
--- trip_miles column
+-- join fact table to base_dim, sum trip_miles column
 SELECT SUM(trip_miles) 
-FROM GOLD.FACT_FHV_TRIP; -- 16682336
+FROM GOLD.FACT_FHV_TRIP;
 SELECT SUM(trip_miles)
 FROM GOLD.FACT_FHV_TRIP AS fact
 JOIN gold.base_dim AS dim
-ON dim.base_num = fact.dispatching_base_number; -- 16682160
+ON dim.base_num = fact.dispatching_base_number;
 
-SELECT * FROM gold.base_dim LIMIT 3;
-
-
--- trip_miles
--- trip_time
--- base_passenger_fare
--- tolls
--- black_car_fund
--- sales_tax
--- congenstion_surcharge
--- airport_fee
--- tips
--- driver_pay
-
-
-
-
--- check dimensions
--- base_dim
-SELECT COUNT(*)
+-- join fact table to base_dim, sum trip_time column
+SELECT SUM(trip_time) 
+FROM GOLD.FACT_FHV_TRIP;
+SELECT SUM(trip_time)
 FROM GOLD.FACT_FHV_TRIP AS fact
 JOIN gold.base_dim AS dim
-ON fact.dispatching_base_number = dim.base_num; -- 260,874,753
+ON dim.base_num = fact.dispatching_base_number;
 
-SELECT COUNT(*) FROM gold.fact_fhv_trip; -- 260,874,753
--- 
+-- join fact table to base_dim, sum base_passenger_fare column
+SELECT SUM(base_passenger_fare) 
+FROM GOLD.FACT_FHV_TRIP;
+SELECT SUM(base_passenger_fare)
+FROM GOLD.FACT_FHV_TRIP AS fact
+JOIN gold.base_dim AS dim
+ON dim.base_num = fact.dispatching_base_number;
 
+-- join fact table to base_dim, sum tips column
+SELECT SUM(tips) 
+FROM GOLD.FACT_FHV_TRIP;
+SELECT SUM(tips)
+FROM GOLD.FACT_FHV_TRIP AS fact
+JOIN gold.base_dim AS dim
+ON dim.base_num = fact.dispatching_base_number;
 
+-- zone dim
+-- join fact table to zone_dim, count rows
+SELECT COUNT(*) 
+FROM GOLD.FACT_FHV_TRIP; 
+SELECT COUNT(*)
+FROM GOLD.FACT_FHV_TRIP AS fact
+JOIN gold.zone_dim AS dim
+ON dim.zone_id = fact.pu_location_id; 
 
-SELECT COUNT(*) FROM silver_layer.test.fhv;
-SELECT COUNT(*) FROM gold_level.public.fhv_trip_fact_table;
-SELECT * FROM gold_level.public.fhv_trip_fact_table LIMIT 1;
+-- join fact table to zone_dim, sum trip_miles column
+SELECT SUM(trip_miles) 
+FROM GOLD.FACT_FHV_TRIP;
+SELECT SUM(trip_miles)
+FROM GOLD.FACT_FHV_TRIP AS fact
+JOIN gold.zone_dim AS dim
+ON dim.zone_id = fact.pu_location_id; 
 
+-- join fact table to zone_dim, sum trip_time column
+SELECT SUM(trip_time) 
+FROM GOLD.FACT_FHV_TRIP;
+SELECT SUM(trip_time)
+FROM GOLD.FACT_FHV_TRIP AS fact
+JOIN gold.zone_dim AS dim
+ON dim.zone_id = fact.pu_location_id; 
 
--- checking number of rows
+-- join fact table to zone_dim, sum base_passenger_fare column
+SELECT SUM(base_passenger_fare) 
+FROM GOLD.FACT_FHV_TRIP;
+SELECT SUM(base_passenger_fare)
+FROM GOLD.FACT_FHV_TRIP AS fact
+JOIN gold.zone_dim AS dim
+ON dim.zone_id = fact.pu_location_id; 
+
+-- join fact table to zone_dim, sum tips column
+SELECT SUM(tips) 
+FROM GOLD.FACT_FHV_TRIP;
+SELECT SUM(tips)
+FROM GOLD.FACT_FHV_TRIP AS fact
+JOIN gold.zone_dim AS dim
+ON dim.zone_id = fact.pu_location_id; 
 
 -- silver vs gold
 -- fhv
-SELECT COUNT(*) FROM silver.fhv; -- 260,874,753
+SELECT COUNT(*) FROM silver.fhv;
 SELECT COUNT(*) 
 FROM GOLD.FACT_FHV_TRIP
-WHERE hvfhs_license_number IS NULL; -- 260,874,753
+WHERE hvfhs_license_number IS NULL;
 
-SELECT COUNT(*)
-FROM GOLD.FACT_FHV_TRIP; -- 260,874,753
 -- fhv hv
-SELECT COUNT(*) FROM silver.fhvhv; -- 60,000,305
+SELECT COUNT(*) FROM silver.fhvhv;
 SELECT COUNT(*) 
 FROM GOLD.FACT_FHV_TRIP
-WHERE hvfhs_license_number IS NOT NULL; -- 60,000,305
-
-
--- check dimensions
--- base_dim
-SELECT COUNT(*)
-FROM GOLD.FACT_FHV_TRIP AS fact
-JOIN gold.base_dim AS dim
-ON fact.dispatching_base_number = dim.base_num; -- 260,874,753
-
-SELECT COUNT(*) FROM gold.fact_fhv_trip; -- 260,874,753
-
--- 
-
-SELECT * FROM GOLD.FACT_FHV_TRIP LIMIT 5;
-
-SELECT COUNT(*) FROM silver_layer.test.fhv;
-SELECT COUNT(*) FROM gold_level.public.fhv_trip_fact_table;
-SELECT * FROM gold_level.public.fhv_trip_fact_table LIMIT 1;
-
+WHERE hvfhs_license_number IS NOT NULL;
