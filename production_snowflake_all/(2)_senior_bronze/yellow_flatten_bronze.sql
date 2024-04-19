@@ -25,5 +25,5 @@ FROM nyc_taxi.bronze.yellow
 ;
 
 
---SELECT COUNT(*) FROM nyc_taxi.senior_bronze.yellow;
+-- SELECT COUNT(*) FROM nyc_taxi.senior_bronze.yellow;
 

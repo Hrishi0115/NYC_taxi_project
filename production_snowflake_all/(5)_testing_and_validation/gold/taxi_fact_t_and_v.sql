@@ -265,6 +265,7 @@ WHERE congestion_surcharge BETWEEN 0 AND 120
 SELECT COUNT(*) AS bad_rows_in_fact_table FROM error_checking.gold.taxi_fact_errors;
 
 
+
 -- -- can drop all rows in fact table with rows that appear in error table to
 -- -- maintain integrity of fact table used for reporting
 -- DELETE FROM nyc_taxi.gold.fact_taxi_trip

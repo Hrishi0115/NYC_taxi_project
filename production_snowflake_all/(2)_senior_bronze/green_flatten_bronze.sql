@@ -22,3 +22,5 @@ SELECT
   $1:trip_type::int as trip_type
 FROM nyc_taxi.bronze.green
 ;
+
+
