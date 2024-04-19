@@ -18,6 +18,8 @@ CREATE OR REPLACE TABLE error_checking.gold.taxi_fact_errors
 );
 
 
+
+
 ------ run tests ------
 
 -- 1. taxi_colour_id
