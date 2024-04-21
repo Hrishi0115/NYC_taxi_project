@@ -30,6 +30,9 @@ def json_url_writer(taxi_colour, start_year, end_year, start_month, end_month):
             year += 1
             if year == end_year:
                 months = list((f'{month:02d}' for month in range(1,end_month+1)))
+            else:
+                months = list((f'{month:02d}' for month in range(1,12+1)))
+
 
 
         json.dump(url_list, f)
