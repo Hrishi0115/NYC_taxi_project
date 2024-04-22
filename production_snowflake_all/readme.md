@@ -3,7 +3,6 @@
 ## Overview
 This Repository contains the snowflake files used in an ELT automated pipeline for the Kubrick Group Training Final Project. The project was orchestrated using Azure Data Factory, using snowflake as the data warehouse and azure blob storage for raw data landing. The project workflow followed the data lake medallion structure, with each stage stored in separated schema in the snowflake production database. Raw data is stored in bronze, flattened data in senior bronze, cleaned data in in silver, and the data placed into the dimensional model star schema is stored in gold. 
 
-![Image]((6)_resources/images/full_pipeline.png)
 
 ## Brief:
 - Develop automated pipeline for NYC taxi trip data: https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page
@@ -12,6 +11,15 @@ This Repository contains the snowflake files used in an ELT automated pipeline f
 - Produce some insightful Data Visualisations and Reports
 - Agile project should be structured and run according to accepted best practice
 
+## Our Solution:
+
+### Full ELT Pipeline:
+
+![Image]((6)_resources/images/full_pipeline.png)
+
+### Dimensional Model for Analysis and BI:
+
+![Image]((6)_resources/images/nyc_taxi_dimensional_model.png)
 
 ## Repo Contents:
 ```
